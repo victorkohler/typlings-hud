@@ -63,17 +63,18 @@ const PATTERNS = [
 const TABS = ['product', 'personalize', 'layout', 'design']
 
 export function useConfigurator() {
-  const [activeTab, setActiveTabState] = useState('product')
+  const [activeTab, setActiveTab] = useState('product')
 
-  // State 1: Product selection (poster pre-selected by default)
+  // State 1: Product selection (poster pre-selected by default).
+  // Size is remembered per product: switching poster → baby-body → poster
+  // restores the last size chosen for each. Frame selection persists across
+  // product switches too (hidden but retained for products without frames).
   const [selectedProduct, setSelectedProduct] = useState('poster')
-  const [selectedSize, setSelectedSize] = useState(PRODUCTS[0].sizes[0].label)
+  const [sizeByProduct, setSizeByProduct] = useState(() =>
+    Object.fromEntries(PRODUCTS.map((p) => [p.id, p.sizes[0].label]))
+  )
   const [selectedFrame, setSelectedFrame] = useState('none')
-
-  // Tracks the last product the user "confirmed" by navigating away from the
-  // Product tab. Used so the tab icon only updates after confirmation, not
-  // immediately on selection.
-  const [confirmedProductId, setConfirmedProductId] = useState(null)
+  const selectedSize = sizeByProduct[selectedProduct]
 
   // State 2: Text
   const [text, setText] = useState('')
@@ -94,34 +95,20 @@ export function useConfigurator() {
     design: false,
   })
 
-  // Wrapped setActiveTab: marks the current product selection as "confirmed"
-  // when the user navigates away from the Product tab.
-  const setActiveTab = useCallback((tab) => {
-    setActiveTabState((current) => {
-      if (current === 'product' && tab !== 'product') {
-        setConfirmedProductId(selectedProduct)
-      }
-      return tab
-    })
-  }, [selectedProduct])
-
   const markComplete = useCallback((tab) => {
     setCompletions((prev) => ({ ...prev, [tab]: true }))
   }, [])
 
-  // Product selection also pre-selects first size and "No Frame"
   const selectProduct = useCallback((productId) => {
     const product = PRODUCTS.find((p) => p.id === productId)
     if (!product) return
     setSelectedProduct(productId)
-    setSelectedSize(product.sizes[0].label)
-    setSelectedFrame('none')
     markComplete('product')
   }, [markComplete])
 
   const selectSize = useCallback((sizeLabel) => {
-    setSelectedSize(sizeLabel)
-  }, [])
+    setSizeByProduct((prev) => ({ ...prev, [selectedProduct]: sizeLabel }))
+  }, [selectedProduct])
 
   const selectFrame = useCallback((frameId) => {
     setSelectedFrame(frameId)
@@ -129,10 +116,13 @@ export function useConfigurator() {
 
   const updateText = useCallback((value) => {
     setText(value)
-    if (value.trim().length > 0) {
-      markComplete('personalize')
-    }
-  }, [markComplete])
+    // Completion tracks current non-empty state — clearing the field removes
+    // the Personalize step's completion badge.
+    const isComplete = value.trim().length > 0
+    setCompletions((prev) => (
+      prev.personalize === isComplete ? prev : { ...prev, personalize: isComplete }
+    ))
+  }, [])
 
   const selectLayout = useCallback((layoutId) => {
     setSelectedLayout(layoutId)
@@ -203,6 +193,5 @@ export function useConfigurator() {
     completions,
     totalPrice,
     product,
-    confirmedProductId,
   }
 }

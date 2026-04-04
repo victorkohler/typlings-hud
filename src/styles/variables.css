@@ -9,6 +9,11 @@
 html, body {
   height: 100%;
   overflow: hidden;
+  /* Prevent iOS Safari from auto-inflating text, which can push the textarea
+     font-size below the 16px zoom-on-focus threshold even when it's declared
+     at 16px in CSS. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 :root {

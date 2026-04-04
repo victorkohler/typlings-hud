@@ -12,7 +12,6 @@ import { CartButton } from './components/CartButton'
 export default function App() {
   const config = useConfigurator()
   const isExpanded = config.activeTab === 'product'
-  const confirmedProduct = config.PRODUCTS.find((p) => p.id === config.confirmedProductId)
 
   const tabContent = {
     product: (
@@ -79,8 +78,8 @@ export default function App() {
             activeTab={config.activeTab}
             onTabChange={config.setActiveTab}
             completions={config.completions}
-            confirmedProductId={config.confirmedProductId}
-            confirmedProductName={confirmedProduct?.name}
+            selectedProductId={config.selectedProduct}
+            selectedProductName={config.product?.name}
           />
         }
       >

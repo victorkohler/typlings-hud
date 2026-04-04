@@ -76,7 +76,7 @@ const PRODUCT_ICON = {
   'baby-body': IconBabyBody,
 }
 
-export function TabBar({ tabs, activeTab, onTabChange, completions, confirmedProductId, confirmedProductName }) {
+export function TabBar({ tabs, activeTab, onTabChange, completions, selectedProductId, selectedProductName }) {
   const activeIndex = tabs.indexOf(activeTab)
 
   return (
@@ -90,13 +90,13 @@ export function TabBar({ tabs, activeTab, onTabChange, completions, confirmedPro
         const isActive = activeTab === tabId
         const isComplete = completions[tabId]
 
-        // Icon and label only swap to the product-specific variant after the
-        // user has confirmed the product by navigating away from the tab.
-        const showProductIcon = tabId === 'product' && confirmedProductId
-        const Icon = showProductIcon
-          ? (PRODUCT_ICON[confirmedProductId] ?? config.icon)
-          : config.icon
-        const label = showProductIcon ? confirmedProductName : config.label
+        // The Product tab's icon + label reflect whatever product is currently
+        // selected (updates live, not on navigate-away). Falls back to the
+        // generic Product icon if the selected id has no entry in PRODUCT_ICON.
+        const isProductTab = tabId === 'product'
+        const productIcon = isProductTab ? PRODUCT_ICON[selectedProductId] : null
+        const Icon = productIcon ?? config.icon
+        const label = isProductTab && selectedProductName ? selectedProductName : config.label
 
         return (
           <button
