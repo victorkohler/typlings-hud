@@ -1,15 +1,17 @@
 import { useState, useCallback } from 'react'
+import posterThumb from '../assets/poster-thumb-001.jpg'
+import bodyThumb from '../assets/body-thumb-001.jpg'
 
 const PRODUCTS = [
-  { id: 'poster', name: 'Poster', sizes: [{ label: '30x40cm', price: 399 }, { label: '50x70cm', price: 499 }] },
-  { id: 'baby-body', name: 'Baby Body', sizes: [{ label: 'S', price: 299 }, { label: 'M', price: 299 }] },
+  { id: 'poster', name: 'Poster', thumbnail: posterThumb, sizes: [{ label: '30x40cm', price: 399 }, { label: '50x70cm', price: 499 }] },
+  { id: 'baby-body', name: 'Baby Body', thumbnail: bodyThumb, sizes: [{ label: 'S', price: 299 }, { label: 'M', price: 299 }] },
 ]
 
 const FRAMES = [
+  { id: 'none', name: 'No Frame', price: 0 },
   { id: 'light-oak', name: 'Light Oak', price: 300 },
   { id: 'dark-oak', name: 'Dark Oak', price: 300 },
   { id: 'white', name: 'White', price: 300 },
-  { id: 'none', name: 'No Frame', price: 0 },
 ]
 
 const LAYOUTS = [
@@ -40,12 +42,17 @@ const PATTERNS = [
 const TABS = ['product', 'personalize', 'layout', 'design']
 
 export function useConfigurator() {
-  const [activeTab, setActiveTab] = useState('product')
+  const [activeTab, setActiveTabState] = useState('product')
 
-  // State 1: Product selection
-  const [selectedProduct, setSelectedProduct] = useState(null)
-  const [selectedSize, setSelectedSize] = useState(null)
+  // State 1: Product selection (poster pre-selected by default)
+  const [selectedProduct, setSelectedProduct] = useState('poster')
+  const [selectedSize, setSelectedSize] = useState(PRODUCTS[0].sizes[0].label)
   const [selectedFrame, setSelectedFrame] = useState('none')
+
+  // Tracks the last product the user "confirmed" by navigating away from the
+  // Product tab. Used so the tab icon only updates after confirmation, not
+  // immediately on selection.
+  const [confirmedProductId, setConfirmedProductId] = useState(null)
 
   // State 2: Text
   const [text, setText] = useState('')
@@ -58,13 +65,24 @@ export function useConfigurator() {
   const [selectedColor, setSelectedColor] = useState('charcoal')
   const [selectedPattern, setSelectedPattern] = useState(null)
 
-  // Completion badges
+  // Completion badges (product starts true since we pre-select one)
   const [completions, setCompletions] = useState({
-    product: false,
+    product: true,
     personalize: false,
     layout: false,
     design: false,
   })
+
+  // Wrapped setActiveTab: marks the current product selection as "confirmed"
+  // when the user navigates away from the Product tab.
+  const setActiveTab = useCallback((tab) => {
+    setActiveTabState((current) => {
+      if (current === 'product' && tab !== 'product') {
+        setConfirmedProductId(selectedProduct)
+      }
+      return tab
+    })
+  }, [selectedProduct])
 
   const markComplete = useCallback((tab) => {
     setCompletions((prev) => ({ ...prev, [tab]: true }))
@@ -124,7 +142,7 @@ export function useConfigurator() {
   const advanceFromProduct = useCallback(() => {
     if (!selectedProduct) return
     setActiveTab('personalize')
-  }, [selectedProduct])
+  }, [selectedProduct, setActiveTab])
 
   return {
     // Data
@@ -164,5 +182,6 @@ export function useConfigurator() {
     completions,
     totalPrice,
     product,
+    confirmedProductId,
   }
 }

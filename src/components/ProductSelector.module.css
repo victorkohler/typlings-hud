@@ -1,10 +1,221 @@
 .container {
-  flex: 1;
   padding: var(--space-lg);
-  overflow-y: auto;
 }
 
-.placeholder {
-  color: var(--color-text-secondary);
+/* Section title */
+.sectionTitle {
+  font-family: 'Helvetica', sans-serif;
+  font-style: italic;
   font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 16px;
+}
+
+/* Reused for "Select size" / "Select Frame" headers */
+.sectionLabel {
+  font-family: 'Helvetica', sans-serif;
+  font-style: italic;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+/* Divider between sections */
+.divider {
+  border: none;
+  height: 1px;
+  background: #E5E5E5;
+  margin: 20px 0;
+}
+
+/* Product grid */
+.productGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.productCard {
+  display: block;
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.productThumbnail {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  background: var(--color-surface-thumbnail);
+  border-radius: 12px;
+  border: 1px solid transparent;
+  transition: border-color var(--duration-normal) ease;
+  overflow: hidden;
+}
+
+.productImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.5;
+  transition: opacity var(--duration-normal) ease;
+}
+
+.productCard.selected .productImage {
+  opacity: 1;
+}
+
+.productCard.selected .productThumbnail {
+  border-color: var(--color-accent);
+}
+
+.productLabel {
+  padding-top: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-text-primary);
+  text-align: left;
+  font-family: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Size selector */
+.sizeHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+}
+
+.sizeGuideLink {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--color-text-primary);
+  text-decoration: underline;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.sizeList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sizePill {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-input);
+  background: var(--color-white);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  font-family: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, sans-serif;
+  transition: border-color var(--duration-normal) ease,
+              background var(--duration-normal) ease,
+              color var(--duration-normal) ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sizePill.selected {
+  border-color: var(--color-accent);
+  background: var(--color-surface-card-selected);
+  color: var(--color-accent);
+}
+
+.sizePrice {
+  font-weight: 500;
+  color: inherit;
+}
+
+.sizePill.selected .sizePrice {
+  font-weight: 600;
+}
+
+/* Product description */
+.descriptionText {
+  margin-top: 10px;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--color-text-secondary);
+  font-family: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Frame selector */
+.frameHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+}
+
+.frameInfoLink {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--color-text-primary);
+  text-decoration: underline;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.frameRow {
+  display: flex;
+  gap: 12px;
+}
+
+.frameCard {
+  flex: 1 1 0;
+  min-width: 0;
+  display: block;
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.frameThumbnail {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: var(--color-surface-thumbnail);
+  border-radius: 10px;
+  border: 1px solid transparent;
+  transition: border-color var(--duration-normal) ease;
+}
+
+.frameCard.selected .frameThumbnail {
+  border-color: var(--color-accent);
+}
+
+.frameName {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 400;
+  color: #000000;
+  padding-top: 6px;
+  font-family: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.framePriceDelta {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  padding-top: 2px;
+  font-family: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, sans-serif;
 }

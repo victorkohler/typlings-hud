@@ -13,7 +13,7 @@ html, body {
 
 :root {
   /* Brand */
-  --color-accent: #D4402A;
+  --color-accent: #e8331a;
   --color-cta: #e74024;
   --color-cta-product: #2D2D2D;
   --color-cta-disabled: #C8C4BC;
@@ -29,7 +29,7 @@ html, body {
   --color-surface-card: #E8E4DC;
   --color-surface-card-selected: #FDF5F2;
   --color-surface-card-accent: #FCE8E4;
-  --color-surface-thumbnail: #C8C4BC;
+  --color-surface-thumbnail: #e4e4e4;
   --color-border-subtle: #F0ECE4;
   --color-border-input: #E0DCD4;
   --color-border-swatch: #D0CCC4;

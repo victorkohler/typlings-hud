@@ -7,17 +7,10 @@
   flex-shrink: 0;
 }
 
-.expanded {
-  height: 65vh;
-}
-
-.collapsed {
-  height: 240px;
-}
-
 .content {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  overflow: hidden;
+  max-height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }

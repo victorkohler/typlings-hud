@@ -1,5 +1,15 @@
 import styles from './ProductSelector.module.css'
 
+function formatPrice(price) {
+  return `${price}kr`
+}
+
+function formatDelta(delta) {
+  if (delta === 0) return '+0kr'
+  if (delta > 0) return `+${delta}kr`
+  return `\u2212${Math.abs(delta)}kr`
+}
+
 export function ProductSelector({
   products,
   frames,
@@ -10,9 +20,92 @@ export function ProductSelector({
   onSelectSize,
   onSelectFrame,
 }) {
+  const product = products.find((p) => p.id === selectedProduct)
+  const frameObj = frames.find((f) => f.id === selectedFrame)
+  const currentFramePrice = frameObj?.price ?? 0
+
   return (
     <div className={styles.container}>
-      <p className={styles.placeholder}>Product Selector</p>
+      {/* Section title */}
+      <h2 className={styles.sectionTitle}>Typling products</h2>
+
+      {/* Product grid */}
+      <div className={styles.productGrid}>
+        {products.map((p) => (
+          <button
+            key={p.id}
+            className={`${styles.productCard} ${selectedProduct === p.id ? styles.selected : ''}`}
+            onClick={() => onSelectProduct(p.id)}
+          >
+            <div className={styles.productThumbnail}>
+              {p.thumbnail && (
+                <img
+                  src={p.thumbnail}
+                  alt=""
+                  className={styles.productImage}
+                  decoding="async"
+                  loading="eager"
+                  draggable="false"
+                />
+              )}
+            </div>
+            <div className={styles.productLabel}>{p.name}</div>
+          </button>
+        ))}
+      </div>
+
+      <hr className={styles.divider} />
+
+      {product && (
+        <>
+          {/* Size selector */}
+          <div className={styles.sizeHeader}>
+            <span className={styles.sectionLabel}>Select size</span>
+            <button className={styles.sizeGuideLink}>Size guide</button>
+          </div>
+          <div className={styles.sizeList}>
+            {product.sizes.map((size) => (
+              <button
+                key={size.label}
+                className={`${styles.sizePill} ${selectedSize === size.label ? styles.selected : ''}`}
+                onClick={() => onSelectSize(size.label)}
+              >
+                <span>{size.label}</span>
+                <span className={styles.sizePrice}>{formatPrice(size.price)}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Product description (no price) */}
+          <p className={styles.descriptionText}>
+            Printed on high quality super heavy nice paper
+          </p>
+
+          <hr className={styles.divider} />
+
+          {/* Frame selector */}
+          <div className={styles.frameHeader}>
+            <span className={styles.sectionLabel}>Select Frame</span>
+            <button className={styles.frameInfoLink}>Our frames</button>
+          </div>
+          <div className={styles.frameRow}>
+            {frames.map((frame) => {
+              const delta = frame.price - currentFramePrice
+              return (
+                <button
+                  key={frame.id}
+                  className={`${styles.frameCard} ${selectedFrame === frame.id ? styles.selected : ''}`}
+                  onClick={() => onSelectFrame(frame.id)}
+                >
+                  <div className={styles.frameThumbnail} />
+                  <div className={styles.frameName}>{frame.name}</div>
+                  <div className={styles.framePriceDelta}>{formatDelta(delta)}</div>
+                </button>
+              )
+            })}
+          </div>
+        </>
+      )}
     </div>
   )
 }
