@@ -3,8 +3,29 @@ import posterThumb from '../assets/poster-thumb-001.jpg'
 import bodyThumb from '../assets/body-thumb-001.jpg'
 
 const PRODUCTS = [
-  { id: 'poster', name: 'Poster', thumbnail: posterThumb, sizes: [{ label: '30x40cm', price: 399 }, { label: '50x70cm', price: 499 }] },
-  { id: 'baby-body', name: 'Baby Body', thumbnail: bodyThumb, sizes: [{ label: 'S', price: 299 }, { label: 'M', price: 299 }] },
+  {
+    id: 'poster',
+    name: 'Poster',
+    thumbnail: posterThumb,
+    supportsFrames: true,
+    sizes: [
+      { label: '30x40cm', price: 399 },
+      { label: '50x70cm', price: 499 },
+    ],
+  },
+  {
+    id: 'baby-body',
+    name: 'Baby Body',
+    thumbnail: bodyThumb,
+    supportsFrames: false,
+    sizes: [
+      { label: 'XS', price: 299 },
+      { label: 'S', price: 299 },
+      { label: 'M', price: 299 },
+      { label: 'L', price: 299 },
+      { label: 'XL', price: 299 },
+    ],
+  },
 ]
 
 const FRAMES = [

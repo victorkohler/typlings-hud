@@ -71,14 +71,19 @@ export default function App() {
         isExpanded={isExpanded}
       />
 
-      <HudPanel isExpanded={isExpanded}>
-        <TabBar
-          tabs={config.TABS}
-          activeTab={config.activeTab}
-          onTabChange={config.setActiveTab}
-          completions={config.completions}
-          confirmedProductName={confirmedProduct?.name}
-        />
+      <HudPanel
+        isExpanded={isExpanded}
+        header={
+          <TabBar
+            tabs={config.TABS}
+            activeTab={config.activeTab}
+            onTabChange={config.setActiveTab}
+            completions={config.completions}
+            confirmedProductId={config.confirmedProductId}
+            confirmedProductName={confirmedProduct?.name}
+          />
+        }
+      >
         {tabContent[config.activeTab]}
       </HudPanel>
 
@@ -86,6 +91,7 @@ export default function App() {
         activeTab={config.activeTab}
         totalPrice={config.totalPrice}
         hasProduct={!!config.selectedProduct}
+        productName={config.product?.name}
         onAction={handleCtaAction}
       />
     </div>

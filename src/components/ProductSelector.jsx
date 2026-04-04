@@ -59,11 +59,11 @@ export function ProductSelector({
       {product && (
         <>
           {/* Size selector */}
-          <div className={styles.sizeHeader}>
+          <div className={styles.sectionHeader}>
             <span className={styles.sectionLabel}>Select size</span>
-            <button className={styles.sizeGuideLink}>Size guide</button>
+            <button className={styles.sectionLink}>Size guide</button>
           </div>
-          <div className={styles.sizeList}>
+          <div className={`${styles.sizeList} ${product.sizes.length > 3 ? styles.sizeListGrid : ''}`}>
             {product.sizes.map((size) => (
               <button
                 key={size.label}
@@ -81,29 +81,33 @@ export function ProductSelector({
             Printed on high quality super heavy nice paper
           </p>
 
-          <hr className={styles.divider} />
+          {product.supportsFrames && (
+            <>
+              <hr className={styles.divider} />
 
-          {/* Frame selector */}
-          <div className={styles.frameHeader}>
-            <span className={styles.sectionLabel}>Select Frame</span>
-            <button className={styles.frameInfoLink}>Our frames</button>
-          </div>
-          <div className={styles.frameRow}>
-            {frames.map((frame) => {
-              const delta = frame.price - currentFramePrice
-              return (
-                <button
-                  key={frame.id}
-                  className={`${styles.frameCard} ${selectedFrame === frame.id ? styles.selected : ''}`}
-                  onClick={() => onSelectFrame(frame.id)}
-                >
-                  <div className={styles.frameThumbnail} />
-                  <div className={styles.frameName}>{frame.name}</div>
-                  <div className={styles.framePriceDelta}>{formatDelta(delta)}</div>
-                </button>
-              )
-            })}
-          </div>
+              {/* Frame selector */}
+              <div className={styles.sectionHeader}>
+                <span className={styles.sectionLabel}>Select Frame</span>
+                <button className={styles.sectionLink}>Our frames</button>
+              </div>
+              <div className={styles.frameRow}>
+                {frames.map((frame) => {
+                  const delta = frame.price - currentFramePrice
+                  return (
+                    <button
+                      key={frame.id}
+                      className={`${styles.frameCard} ${selectedFrame === frame.id ? styles.selected : ''}`}
+                      onClick={() => onSelectFrame(frame.id)}
+                    >
+                      <div className={styles.frameThumbnail} />
+                      <div className={styles.frameName}>{frame.name}</div>
+                      <div className={styles.framePriceDelta}>{formatDelta(delta)}</div>
+                    </button>
+                  )
+                })}
+              </div>
+            </>
+          )}
         </>
       )}
     </div>

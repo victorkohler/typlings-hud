@@ -5,12 +5,19 @@
   overflow: hidden;
   transition: height var(--duration-panel) var(--ease-panel);
   flex-shrink: 0;
-}
-
-.content {
   display: flex;
   flex-direction: column;
-  max-height: 100%;
+}
+
+/* Non-scrolling header region (TabBar) — stays pinned when content scrolls */
+.header {
+  flex-shrink: 0;
+}
+
+/* Scrolling region (tab content) — fills remaining space and scrolls internally */
+.scrollArea {
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }

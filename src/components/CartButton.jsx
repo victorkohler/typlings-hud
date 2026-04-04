@@ -1,10 +1,12 @@
 import styles from './CartButton.module.css'
 
-export function CartButton({ activeTab, totalPrice, hasProduct, onAction }) {
+export function CartButton({ activeTab, totalPrice, hasProduct, productName, onAction }) {
   const isProductTab = activeTab === 'product'
   const disabled = isProductTab && !hasProduct
+  // Button text is uppercased via CSS `text-transform`, so we interpolate the
+  // product name in its original case.
   const label = isProductTab
-    ? `SELECT PRODUCT - ${totalPrice}kr`
+    ? `PERSONALIZE ${productName} - ${totalPrice}kr`
     : `ADD TO CART - ${totalPrice}kr`
 
   return (

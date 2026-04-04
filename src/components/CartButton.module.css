@@ -10,10 +10,10 @@
   border: none;
   border-radius: var(--radius-pill);
   font-family: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 12px;
+  /*font-weight: 700;*/
   text-transform: uppercase;
-  letter-spacing: 1.2px;
+  letter-spacing: 1px;
   color: var(--color-white);
   cursor: pointer;
   transition: background-color var(--duration-slow) ease, opacity var(--duration-slow) ease;

@@ -18,6 +18,14 @@ function IconPoster() {
   )
 }
 
+function IconBabyBody() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 39.831 33.697" fill="currentColor">
+      <path d="M39.215,10.247l-6.71-6.634v-.002l-.261-.261c-.794-.793-1.43-1.404-2.068-2.018l-.888-.858c-.441-.428-1.05-.574-1.634-.397-.586.18-1.027.67-1.152,1.277-.638,3.109-3.408,5.365-6.588,5.365s-5.949-2.257-6.59-5.369c-.123-.606-.565-1.094-1.147-1.274-.582-.184-1.194-.032-1.635.394l-.82.789c-.667.639-1.324,1.269-2.141,2.094l-.236.239L.615,10.247C.221,10.637.002,11.157,0,11.713c-.002.556.214,1.078.606,1.472l4.341,4.339c.391.392.911.607,1.465.607.326,0,.629-.095.912-.237v7.052l6.843,8.751h11.494l6.843-8.751v-7.051c.283.141.587.236.912.236.554,0,1.074-.215,1.465-.606l4.341-4.341c.393-.393.608-.915.606-1.471-.002-.555-.221-1.076-.615-1.466ZM6.619,16.266c-.099.1-.318.096-.414,0L1.865,11.927c-.075-.075-.085-.162-.085-.209,0-.045.012-.133.087-.207l5.458-5.397v9.445l-.706.706ZM30.726,24.333l-5.933,7.585h-9.756l-5.933-7.585V4.346c.686-.688,1.265-1.241,1.849-1.801l.671-.645c.881,3.835,4.338,6.599,8.291,6.599,3.992,0,7.474-2.814,8.248-6.638l.782.754c.558.537,1.116,1.072,1.781,1.733v19.984ZM37.966,11.926l-4.341,4.341c-.096.097-.315.098-.414,0l-.706-.707V6.115l5.458,5.397c.075.074.087.162.087.207,0,.046-.01.134-.085.208Z"/>
+    </svg>
+  )
+}
+
 function IconPersonalize() {
   return (
     <svg width="22" height="22" viewBox="0 0 29.178 33.946" fill="currentColor">
@@ -55,13 +63,20 @@ function CompletionBadge() {
 }
 
 const TAB_CONFIG = {
-  product: { icon: IconProduct, selectedIcon: IconPoster, label: 'Product' },
-  personalize: { icon: IconPersonalize, selectedIcon: null, label: 'Personalize' },
-  layout: { icon: IconLayout, selectedIcon: null, label: 'Layout' },
-  design: { icon: IconDesign, selectedIcon: null, label: 'Design' },
+  product: { icon: IconProduct, label: 'Product' },
+  personalize: { icon: IconPersonalize, label: 'Personalize' },
+  layout: { icon: IconLayout, label: 'Layout' },
+  design: { icon: IconDesign, label: 'Design' },
 }
 
-export function TabBar({ tabs, activeTab, onTabChange, completions, confirmedProductName }) {
+// Product-specific icon that replaces the generic Product tab icon once the
+// user has confirmed a product by navigating away from the Product tab.
+const PRODUCT_ICON = {
+  poster: IconPoster,
+  'baby-body': IconBabyBody,
+}
+
+export function TabBar({ tabs, activeTab, onTabChange, completions, confirmedProductId, confirmedProductName }) {
   const activeIndex = tabs.indexOf(activeTab)
 
   return (
@@ -77,8 +92,10 @@ export function TabBar({ tabs, activeTab, onTabChange, completions, confirmedPro
 
         // Icon and label only swap to the product-specific variant after the
         // user has confirmed the product by navigating away from the tab.
-        const showProductIcon = tabId === 'product' && confirmedProductName
-        const Icon = showProductIcon ? config.selectedIcon : config.icon
+        const showProductIcon = tabId === 'product' && confirmedProductId
+        const Icon = showProductIcon
+          ? (PRODUCT_ICON[confirmedProductId] ?? config.icon)
+          : config.icon
         const label = showProductIcon ? confirmedProductName : config.label
 
         return (
