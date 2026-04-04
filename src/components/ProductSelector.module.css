@@ -1,0 +1,9 @@
+.container {
+  padding: var(--space-lg);
+  overflow-y: auto;
+}
+
+.placeholder {
+  color: var(--color-text-secondary);
+  font-size: 14px;
+}

@@ -1,0 +1,15 @@
+.panel {
+  background: var(--color-white);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  box-shadow: var(--shadow-hud);
+  overflow: hidden;
+  transition: height var(--duration-panel) var(--ease-panel);
+}
+
+.expanded {
+  height: 65vh;
+}
+
+.collapsed {
+  height: 240px;
+}

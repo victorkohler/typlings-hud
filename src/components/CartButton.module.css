@@ -1,0 +1,10 @@
+.container {
+  padding: var(--space-md) var(--space-lg) var(--space-xl);
+  background: var(--color-white);
+}
+
+.placeholder {
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  text-align: center;
+}

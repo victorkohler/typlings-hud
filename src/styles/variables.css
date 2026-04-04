@@ -1,0 +1,46 @@
+:root {
+  /* Brand */
+  --color-accent: #D4402A;
+  --color-cta: #E8745A;
+  --color-cta-product: #2D2D2D;
+  --color-cta-disabled: #C8C4BC;
+
+  /* Text */
+  --color-text-primary: #333333;
+  --color-text-secondary: #999999;
+  --color-text-muted: #666666;
+  --color-white: #FFFFFF;
+  --color-bg-warm: #F5F0E8;
+
+  /* Surfaces */
+  --color-surface-card: #E8E4DC;
+  --color-surface-card-selected: #FDF5F2;
+  --color-surface-card-accent: #FCE8E4;
+  --color-surface-thumbnail: #C8C4BC;
+  --color-border-subtle: #F0ECE4;
+  --color-border-input: #E0DCD4;
+  --color-border-swatch: #D0CCC4;
+
+  /* Shadows */
+  --shadow-hud: 0 -4px 24px rgba(0, 0, 0, 0.08);
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+
+  /* Radii */
+  --radius-sm: 10px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-pill: 28px;
+
+  /* Timing */
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  --duration-panel: 400ms;
+  --ease-panel: cubic-bezier(0.4, 0, 0.2, 1);
+}

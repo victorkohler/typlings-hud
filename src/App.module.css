@@ -1,0 +1,10 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  background-color: var(--color-bg-warm);
+  overflow: hidden;
+  font-family: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+}
