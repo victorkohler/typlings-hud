@@ -1,7 +1,20 @@
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
 :root {
   /* Brand */
   --color-accent: #D4402A;
-  --color-cta: #E8745A;
+  --color-cta: #e74024;
   --color-cta-product: #2D2D2D;
   --color-cta-disabled: #C8C4BC;
 

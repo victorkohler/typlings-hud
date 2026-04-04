@@ -9,7 +9,7 @@ All colors used in the configurator, with semantic names. These map directly to 
 | Variable | Hex | Usage |
 |----------|-----|-------|
 | `--color-accent` | `#D4402A` | Active tabs, selected borders, completion badges, focused input borders |
-| `--color-cta` | `#E8745A` | CTA button background (States 2–4, coral) |
+| `--color-cta` | `#e74024` | CTA button background (States 2–4, coral) |
 | `--color-cta-product` | `#2D2D2D` | CTA button background (State 1, near black) |
 | `--color-cta-disabled` | `#C8C4BC` | CTA button background (disabled state) |
 
@@ -70,7 +70,7 @@ All colors used in the configurator, with semantic names. These map directly to 
 :root {
   /* Brand */
   --color-accent: #D4402A;
-  --color-cta: #E8745A;
+  --color-cta: #e74024;
   --color-cta-product: #2D2D2D;
   --color-cta-disabled: #C8C4BC;
 

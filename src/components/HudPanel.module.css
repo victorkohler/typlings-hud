@@ -4,6 +4,7 @@
   box-shadow: var(--shadow-hud);
   overflow: hidden;
   transition: height var(--duration-panel) var(--ease-panel);
+  flex-shrink: 0;
 }
 
 .expanded {
@@ -12,4 +13,11 @@
 
 .collapsed {
   height: 240px;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
 }

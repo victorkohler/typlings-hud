@@ -1,5 +1,7 @@
 .container {
+  flex: 1;
   padding: var(--space-lg);
+  overflow-y: auto;
 }
 
 .placeholder {

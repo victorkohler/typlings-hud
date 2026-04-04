@@ -66,7 +66,7 @@ Unlike States 2–4 where product auto-advances, State 1 requires the user to ex
    - Active tab switches to "Personalize"
    - HUD height animates from expanded to collapsed (400ms)
    - Tab bar active state transitions to Personalize tab
-   - CTA button transitions: background `#2D2D2D` → `#E8745A`, text changes to "ADD TO CART – {price}" (300ms)
+   - CTA button transitions: background `#2D2D2D` → `#e74024`, text changes to "ADD TO CART – {price}" (300ms)
 
 ### Why explicit advance matters
 The product tab has multiple sub-selections (product, size, frame). Auto-advancing on product tap would skip the size/frame configuration. The CTA acts as a "confirm and continue" action.
@@ -141,7 +141,7 @@ The CTA has different behavior depending on the active tab:
 - **Action on tap:** Advances to State 2 (Personalize tab)
 
 #### States 2–4 mode ("ADD TO CART")
-- **Background:** `#E8745A` (coral)
+- **Background:** `#e74024` (coral)
 - **Text:** `ADD TO CART - {price}`
 - **Always enabled** (a product must be selected to reach these states)
 - **Action on tap:** Adds to cart (visual feedback only in prototype)

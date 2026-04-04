@@ -8,12 +8,12 @@ Build phases for the poster configurator prototype. Each phase results in someth
 
 Set up Vite + React, file structure per CLAUDE.md, CSS variables, copy assets.
 
-- [ ] Initialize Vite React project
-- [ ] Create directory structure (`components/`, `hooks/`, `assets/`, `styles/`)
-- [ ] Create `variables.css` from color palette template
-- [ ] Copy `bg-poster.jpg` into `src/assets/`
-- [ ] Initialize git repo
-- [ ] Verify `npm run dev` works with a blank app
+- [x] Initialize Vite React project
+- [x] Create directory structure (`components/`, `hooks/`, `assets/`, `styles/`)
+- [x] Create `variables.css` from color palette template
+- [x] Copy `bg-poster.jpg` into `src/assets/`
+- [x] Initialize git repo
+- [x] Verify `npm run dev` works with a blank app
 
 ---
 
@@ -21,12 +21,12 @@ Set up Vite + React, file structure per CLAUDE.md, CSS variables, copy assets.
 
 App layout, HUD panel, tab bar — the structural skeleton everything else mounts into.
 
-- [ ] `useConfigurator.js` — shared state hook (active tab, selections, completions, pricing)
-- [ ] `App.jsx` — full-height flex layout (preview area + HUD + CTA)
-- [ ] `HudPanel.jsx` — white panel with border-radius, expand/collapse height transition
-- [ ] `TabBar.jsx` — 4 tabs with icons, active state, completion badges
-- [ ] `CartButton.jsx` — sticky CTA with two modes (black/coral), disabled state, press feedback
-- [ ] Tab switching works, HUD height animates between expanded/collapsed
+- [x] `useConfigurator.js` — shared state hook (active tab, selections, completions, pricing)
+- [x] `App.jsx` — full-height flex layout (preview area + HUD + CTA)
+- [x] `HudPanel.jsx` — white panel with border-radius, expand/collapse height transition
+- [x] `TabBar.jsx` — 4 tabs with icons, active state, completion badges
+- [x] `CartButton.jsx` — sticky CTA with two modes (black/coral), disabled state, press feedback
+- [x] Tab switching works, HUD height animates between expanded/collapsed
 
 ---
 

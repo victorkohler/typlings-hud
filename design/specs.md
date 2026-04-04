@@ -69,8 +69,8 @@ Use consistent multiples of 4px:
   - Padding: `4px 12px`
   - **Active color:** `#D4402A`
   - **Inactive color:** `#999999`
-  - **Label font:** 11px, weight 600 (active) / 400 (inactive), letter-spacing 0.3px
-  - **Color transition:** `200ms ease`
+  - **Label font:** 11px, weight 400, letter-spacing 0.3px
+  - **Color change:** Instant (no transition — snappier feel)
 
 ### Tab Icons (inline SVG, 22×22px)
 | Tab | Icon | Description |
@@ -273,7 +273,7 @@ Same sizing as solid colors. Background rendered with `repeating-linear-gradient
 - **Disabled state:** Same background `#2D2D2D` but opacity 0.45, cursor default — shown when no product is selected
 
 ### States 2–4 appearance
-- **Background:** `#E8745A` (coral)
+- **Background:** `#e74024` (coral)
 - **Color:** white
 - **Text format:** `ADD TO CART - {price}` (price = size price + frame delta)
 - **Action:** Adds to cart (visual feedback only in prototype)

@@ -87,6 +87,15 @@ When a design spec and a screenshot disagree, **the spec wins** (specs are updat
 | 3 | Layout | Collapsed (~240px) | Horizontally scrollable layout cards (drag-to-scroll). Horizontal/Vertical toggle. |
 | 4 | Design | Collapsed (~240px) | Solid color swatches + pattern swatches. Selection applies live to poster. |
 
+## Progress Tracking
+
+After any implementation work — whether a full phase, a set of tweaks, or a design change — **always update**:
+
+- **`roadmap.md`** — Check off completed items (`- [x]`), add new items if scope changed
+- **`progress.md`** — Log what was done under "Completed" (group by phase or date), update "Current Phase", and record decisions/changes under "Notes & Decisions"
+
+Do this immediately after the work is done, not at the end of a session.
+
 ## Quality Checklist
 
 Before considering any component "done":
