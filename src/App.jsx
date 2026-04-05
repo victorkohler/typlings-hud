@@ -11,7 +11,6 @@ import { CartButton } from './components/CartButton'
 
 export default function App() {
   const config = useConfigurator()
-  const isExpanded = config.activeTab === 'product'
 
   const tabContent = {
     product: (
@@ -67,11 +66,9 @@ export default function App() {
         orientation={config.orientation}
         color={config.selectedColor}
         pattern={config.selectedPattern}
-        isExpanded={isExpanded}
       />
 
       <HudPanel
-        isExpanded={isExpanded}
         header={
           <TabBar
             tabs={config.TABS}

@@ -1,33 +1,27 @@
 import { useRef, useState, useLayoutEffect } from 'react'
 import styles from './HudPanel.module.css'
 
-const COLLAPSED_HEIGHT = 240
-const MAX_VH_RATIO = 0.88
-
-export function HudPanel({ isExpanded, header, children }) {
+export function HudPanel({ header, children }) {
   const headerRef = useRef(null)
   const contentInnerRef = useRef(null)
-  const [measuredExpanded, setMeasuredExpanded] = useState(null)
+  const [measuredHeight, setMeasuredHeight] = useState(null)
 
-  // Measure the natural panel height (header + content) so the panel can size
-  // itself to fit without extra whitespace, capped at 88vh. Beyond the cap,
-  // only the inner scroll area scrolls — the header stays fixed.
+  // Measure the natural panel height (header + content) so the panel sizes
+  // itself to fit its current tab exactly — no fixed collapsed height, no
+  // viewport-based cap. Each state owns its own height; HudPanel is purely
+  // a passive measurer.
   //
   // Note: we measure `contentInnerRef` (an intrinsic-sized wrapper inside the
   // scroll area), NOT the scroll area itself. The scroll area is `flex: 1 1
   // auto` and would report its flex-allocated height via scrollHeight whenever
-  // content fits without overflowing — locking the panel at 88vh on mount.
+  // content fits without overflowing.
   useLayoutEffect(() => {
-    if (!isExpanded) return
     const headerH = headerRef.current?.offsetHeight ?? 0
     const contentH = contentInnerRef.current?.offsetHeight ?? 0
-    const max = window.innerHeight * MAX_VH_RATIO
-    setMeasuredExpanded(Math.min(headerH + contentH, max))
-  }, [isExpanded, children, header])
+    setMeasuredHeight(headerH + contentH)
+  }, [children, header])
 
-  const height = isExpanded
-    ? (measuredExpanded != null ? `${measuredExpanded}px` : `${MAX_VH_RATIO * 100}vh`)
-    : `${COLLAPSED_HEIGHT}px`
+  const height = measuredHeight != null ? `${measuredHeight}px` : 'auto'
 
   return (
     <div className={styles.panel} style={{ height }}>
