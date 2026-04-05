@@ -1,16 +1,24 @@
 .container {
-  padding: var(--space-lg);
+  /* Vertical-only padding so the scroller can span the full HUD width
+     (edge-to-edge). Non-scroller siblings (the orientation toggle below)
+     reintroduce their own horizontal padding. This avoids the negative-
+     margin trick while giving the scroller its own inner padding for the
+     "first card starts at --space-lg from the viewport edge" visual. */
+  padding: var(--space-lg) 0;
 }
 
-/* Horizontal scroll row. Native momentum on touch, custom drag on mouse. */
+/* Horizontal scroll row. Native momentum on touch, custom drag on mouse.
+   Spans the full HUD width; cards scroll all the way to the viewport edges
+   rather than being clipped by container padding. */
 .scroller {
   display: flex;
-  gap: 10px;
+  gap: var(--space-md);
   overflow-x: auto;
   overflow-y: hidden;
-  /* Small vertical padding so the 2px selected-border isn't clipped by
-     overflow:hidden above/below. */
-  padding: 4px 0 6px;
+  /* Inner horizontal padding so the first card sits at --space-lg from the
+     viewport's left edge at rest. Modern browsers respect padding-right in
+     scroll containers, so the last card settles symmetrically. */
+  padding: 0 var(--space-lg);
   -webkit-overflow-scrolling: touch;
   cursor: grab;
   user-select: none;
@@ -26,60 +34,117 @@
 }
 
 .card {
+  /* 4.5 cards visible at rest — 4 full cards plus exactly half of the 5th
+     peeking out at the right edge as a scroll affordance.
+       Derivation:
+         W = 4.5 * cardWidth + 4 * gap
+         (four full gaps between the 4 full cards, plus one more gap before
+         the half card — so 4 visible gaps total, not 3)
+       → cardWidth = (W - 4 * gap) / 4.5
+     Where W is 100% of the scroller's content box and gap = --space-md.
+     The card width lands a few px under the State 1 frame-card size on a
+     375px viewport; we traded strict frame-size parity for a stronger
+     scroll hint per user direction. */
+  width: calc((100% - var(--space-md) * 4) / 4.5);
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
-  align-items: center;
   background: none;
   border: none;
   padding: 0;
   cursor: pointer;
-  flex-shrink: 0;
+  text-align: left;
   -webkit-tap-highlight-color: transparent;
 }
 
 .thumb {
-  width: 64px;
-  height: 64px;
+  width: 100%;
+  aspect-ratio: 1 / 1;
   border-radius: var(--radius-sm);
-  background: var(--color-surface-card);
-  border: 2px solid transparent;
+  background: var(--color-surface-thumbnail);
+  /* 1px border matches the frame placeholder border weight in State 1. */
+  border: 1px solid transparent;
+  /* Center the inline SVG layout preview icon. Icon color follows `color`
+     via `currentColor` so the `.selected` rule's color swap handles the
+     icon tint alongside the border/background changes. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
   transition: background var(--duration-normal) ease,
-              border-color var(--duration-normal) ease;
+              border-color var(--duration-normal) ease,
+              color var(--duration-normal) ease;
+}
+
+.thumb svg {
+  width: 42%;
+  height: 42%;
+  display: block;
 }
 
 .card.selected .thumb {
-  background: var(--color-surface-card-accent);
+  background: var(--color-surface-card-selected);
   border-color: var(--color-accent);
+  color: var(--color-accent);
 }
 
 .cardLabel {
-  margin-top: 6px;
-  font-size: 11px;
+  padding-top: 6px;
+  font-size: 12px;
   font-weight: 400;
-  color: var(--color-text-muted);
+  color: var(--color-text-secondary);
   transition: color var(--duration-normal) ease;
 }
 
 .card.selected .cardLabel {
   color: var(--color-accent);
-  font-weight: 600;
 }
 
-/* Orientation toggle — centered pill with two segments */
+/* Orientation toggle — centered pill with two segments. Has its own
+   horizontal padding because .container no longer does (the scroller needed
+   to extend edge-to-edge). */
 .orientationWrap {
   display: flex;
   justify-content: center;
-  margin-top: var(--space-md);
+  margin-top: var(--space-xl);
+  padding: 0 var(--space-lg);
 }
 
 .orientationToggle {
+  position: relative;
   display: inline-flex;
-  border: 1.5px solid var(--color-accent);
+  border: 1px solid var(--color-accent);
   border-radius: 20px;
+  /* Clip the sliding indicator to the rounded border. `isolation: isolate`
+     creates a new stacking context so the indicator's z-index stays scoped
+     to this toggle and can't accidentally sit under unrelated siblings. */
   overflow: hidden;
+  isolation: isolate;
+}
+
+/* Sliding red pill. Both `transform` (x-offset) and `width` are set inline
+   from React after measuring the active button's offsetLeft/offsetWidth —
+   that way the pill grows/shrinks to exactly fit whichever label is active
+   ("Horizontal" is notably wider than "Vertical"). Inset by -1px top/bottom
+   so the pill covers the toggle's border line inside the clipping region
+   and reads as a single solid shape. */
+.orientationIndicator {
+  position: absolute;
+  top: -1px;
+  bottom: -1px;
+  left: 0;
+  width: 0;
+  background: var(--color-accent);
+  border-radius: 20px;
+  transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              width 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+  will-change: transform, width;
 }
 
 .orientationButton {
+  position: relative;
+  z-index: 1;
   padding: 8px 20px;
   font-size: 12px;
   font-weight: 600;
@@ -88,11 +153,13 @@
   background: transparent;
   color: var(--color-accent);
   cursor: pointer;
-  transition: background 250ms ease, color 250ms ease;
+  /* Only tween `color` here — the fill is handled by the sliding indicator,
+     so no background transition to sync. Duration matches the indicator so
+     the label flip lands on the same frame as the pill arrival. */
+  transition: color 300ms cubic-bezier(0.4, 0, 0.2, 1);
   -webkit-tap-highlight-color: transparent;
 }
 
 .orientationButton.active {
-  background: var(--color-accent);
   color: var(--color-white);
 }
