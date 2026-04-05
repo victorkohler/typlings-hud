@@ -59,14 +59,23 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  /* White ring so the badge disc stays visible when the tab is active and the
+     icon behind it has also turned --color-accent — without the ring, the red
+     disc would melt into the red icon and only the checkmark would show. */
+  box-shadow: 0 0 0 1.5px var(--color-white);
 }
 
 .label {
-  font-size: 11px;
+  font-size: var(--text-xs);
   font-weight: 400;
   letter-spacing: 0.3px;
   font-family: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, sans-serif;
-  color: black;
+  /* Labels are near-black, icons stay secondary-gray (`.tab` sets `color`
+     which the SVGs inherit via `currentColor` — the label overrides that
+     inheritance with its own color). Labels were briefly rendered in
+     secondary gray alongside the icons during the audit cleanup, but that
+     read as "disabled" on every non-active tab, so dark labels are back. */
+  color: var(--color-text-primary);
 }
 
 .tab.active .label {

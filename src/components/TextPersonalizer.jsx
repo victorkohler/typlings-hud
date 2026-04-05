@@ -1,5 +1,11 @@
 import styles from './TextPersonalizer.module.css'
 
+// Maximum characters accepted in the poster text field. Tuned to 30 because
+// longer strings start wrapping past the content zone in the poster preview
+// regardless of layout, and one to three short words is the overwhelming
+// case for personalized posters (names, dates, one-liners).
+const MAX_TEXT_LENGTH = 30
+
 export function TextPersonalizer({ text, onTextChange }) {
   // When re-focusing a non-empty textarea, Safari sometimes reports the
   // selection at (0, 0) on the first focus event, which visually drops the
@@ -16,6 +22,14 @@ export function TextPersonalizer({ text, onTextChange }) {
     }, 0)
   }
 
+  // Defensive slice in case a paste event somehow bypasses `maxLength` (older
+  // Android WebViews occasionally do). The native attribute still handles the
+  // common typing case so the caret behaves correctly.
+  const handleChange = (e) => {
+    const next = e.target.value.slice(0, MAX_TEXT_LENGTH)
+    onTextChange(next)
+  }
+
   return (
     <div className={styles.container}>
       <label className={styles.label} htmlFor="personalize-text">
@@ -25,10 +39,14 @@ export function TextPersonalizer({ text, onTextChange }) {
         id="personalize-text"
         className={styles.textarea}
         value={text}
-        onChange={(e) => onTextChange(e.target.value)}
+        onChange={handleChange}
         onFocus={handleFocus}
+        maxLength={MAX_TEXT_LENGTH}
         rows={3}
       />
+      <div className={styles.counter} aria-live="polite">
+        {text.length}/{MAX_TEXT_LENGTH}
+      </div>
     </div>
   )
 }

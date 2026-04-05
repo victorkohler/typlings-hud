@@ -8,6 +8,7 @@ const PRODUCTS = [
     name: 'Poster',
     thumbnail: posterThumb,
     supportsFrames: true,
+    description: 'Printed on heavyweight matte paper for a gallery-quality finish',
     sizes: [
       { label: '30x40cm', price: 399 },
       { label: '50x70cm', price: 499 },
@@ -18,6 +19,7 @@ const PRODUCTS = [
     name: 'Baby Body',
     thumbnail: bodyThumb,
     supportsFrames: false,
+    description: '100% organic cotton, pre-washed and soft on baby skin',
     sizes: [
       { label: 'XS', price: 299 },
       { label: 'S', price: 299 },
@@ -43,27 +45,41 @@ const LAYOUTS = [
   { id: 'hero', name: 'Hero' },
 ]
 
+// Solid colors drive the poster's *content-zone background* fill (same surface
+// the pattern swatches tint — they're two alternative ways to set the same
+// background). The first entry, `none`, is the pre-selected default: no fill,
+// rendered as a white swatch with a diagonal gray line. The remaining eight
+// are saturated hues spanning the color wheel so the row reads as "pick any
+// mood" rather than a single tonal family. `hex: null` on `none` is the
+// sentinel PosterPreview checks to skip the fill lookup.
 const SOLID_COLORS = [
-  { id: 'coral', hex: '#E8745A', name: 'Coral' },
+  { id: 'none', hex: null, name: 'No background' },
   { id: 'charcoal', hex: '#2D2D2D', name: 'Charcoal' },
+  { id: 'coral', hex: '#E8745A', name: 'Coral' },
   { id: 'forest', hex: '#4A6741', name: 'Forest' },
   { id: 'slate-blue', hex: '#3B5998', name: 'Slate Blue' },
   { id: 'saddle-brown', hex: '#8B4513', name: 'Saddle Brown' },
   { id: 'goldenrod', hex: '#DAA520', name: 'Goldenrod' },
+  { id: 'burgundy', hex: '#7B1F2B', name: 'Burgundy' },
+  { id: 'teal', hex: '#2F6F6B', name: 'Teal' },
 ]
 
+// Patterns tint the poster's content-zone background. Six soft pastels in
+// distinct hue families (warm neutral, pink, green, blue, yellow, purple) so
+// the row offers visible variety instead of the previous all-beige set.
 const PATTERNS = [
   { id: 'cream', hex: '#F5E6D3', name: 'Cream' },
-  { id: 'wheat', hex: '#E8D5B7', name: 'Wheat' },
-  { id: 'sand', hex: '#D4C5A9', name: 'Sand' },
-  { id: 'khaki', hex: '#C0B59B', name: 'Khaki' },
-  { id: 'sage', hex: '#ACA58D', name: 'Sage' },
+  { id: 'blush', hex: '#F8D7D1', name: 'Blush' },
+  { id: 'sage', hex: '#CFDBC5', name: 'Sage' },
+  { id: 'sky', hex: '#D6E4F0', name: 'Sky' },
+  { id: 'butter', hex: '#F5E6A8', name: 'Butter' },
+  { id: 'lilac', hex: '#E4D7EE', name: 'Lilac' },
 ]
 
 const TABS = ['product', 'personalize', 'layout', 'design']
 
 export function useConfigurator() {
-  const [activeTab, setActiveTab] = useState('product')
+  const [activeTab, setActiveTabRaw] = useState('product')
 
   // State 1: Product selection (poster pre-selected by default).
   // Size is remembered per product: switching poster → baby-body → poster
@@ -79,32 +95,55 @@ export function useConfigurator() {
   // State 2: Text
   const [text, setText] = useState('')
 
-  // State 3: Layout
-  const [selectedLayout, setSelectedLayout] = useState(null)
+  // State 3: Layout (boxed pre-selected by default, same pattern as product)
+  const [selectedLayout, setSelectedLayout] = useState('boxed')
   const [orientation, setOrientation] = useState('horizontal')
 
-  // State 4: Design
-  const [selectedColor, setSelectedColor] = useState('charcoal')
+  // State 4: Design — `none` is the pre-selected background (no fill). Solids
+  // and patterns are mutually exclusive; both write to the content-zone bg.
+  const [selectedColor, setSelectedColor] = useState('none')
   const [selectedPattern, setSelectedPattern] = useState(null)
 
-  // Completion badges (product starts true since we pre-select one)
+  // Completion badges. Every tab starts at `false` — a pre-selected default
+  // (poster on Product, boxed on Layout, "no background" on Design) does NOT
+  // count as a user-driven completion. The badge only appears once the user
+  // has tapped the corresponding control themselves. Otherwise every new
+  // session would start with two fake "already done" checkmarks.
   const [completions, setCompletions] = useState({
-    product: true,
+    product: false,
     personalize: false,
     layout: false,
     design: false,
   })
 
   const markComplete = useCallback((tab) => {
-    setCompletions((prev) => ({ ...prev, [tab]: true }))
+    setCompletions((prev) => (prev[tab] ? prev : { ...prev, [tab]: true }))
   }, [])
+
+  // Navigation wrapper. On every tab switch we mark the *previous* tab
+  // complete if it isn't Personalize — the rule is "you've navigated away =
+  // you've accepted the current state, including its defaults". Personalize
+  // is the one exception because it has no meaningful default (an empty
+  // textarea is not a completion), so it keeps its text-driven badge.
+  // Product, Layout, and Design therefore never set their badge on selection
+  // anymore; only on leave. This also covers the "user accepted the
+  // pre-selected default without touching anything" path, which was the
+  // strange case where a poster-pre-selected Product tab still read as
+  // "incomplete" forever until the user tapped the product card.
+  const setActiveTab = useCallback((nextTab) => {
+    setActiveTabRaw((current) => {
+      if (current !== nextTab && current !== 'personalize') {
+        markComplete(current)
+      }
+      return nextTab
+    })
+  }, [markComplete])
 
   const selectProduct = useCallback((productId) => {
     const product = PRODUCTS.find((p) => p.id === productId)
     if (!product) return
     setSelectedProduct(productId)
-    markComplete('product')
-  }, [markComplete])
+  }, [])
 
   const selectSize = useCallback((sizeLabel) => {
     setSizeByProduct((prev) => ({ ...prev, [selectedProduct]: sizeLabel }))
@@ -116,8 +155,10 @@ export function useConfigurator() {
 
   const updateText = useCallback((value) => {
     setText(value)
-    // Completion tracks current non-empty state — clearing the field removes
-    // the Personalize step's completion badge.
+    // Personalize is the exception to the "mark-on-leave" rule — it tracks
+    // current non-empty state so clearing the field removes the badge even
+    // after the user has typed. There's no meaningful "accept the default"
+    // for a blank textarea.
     const isComplete = value.trim().length > 0
     setCompletions((prev) => (
       prev.personalize === isComplete ? prev : { ...prev, personalize: isComplete }
@@ -126,20 +167,17 @@ export function useConfigurator() {
 
   const selectLayout = useCallback((layoutId) => {
     setSelectedLayout(layoutId)
-    markComplete('layout')
-  }, [markComplete])
+  }, [])
 
   const selectColor = useCallback((colorId) => {
     setSelectedColor(colorId)
     setSelectedPattern(null)
-    markComplete('design')
-  }, [markComplete])
+  }, [])
 
   const selectPattern = useCallback((patternId) => {
     setSelectedPattern(patternId)
     setSelectedColor(null)
-    markComplete('design')
-  }, [markComplete])
+  }, [])
 
   // Price calculation
   const product = PRODUCTS.find((p) => p.id === selectedProduct)

@@ -16,8 +16,7 @@
   border: none;
   border-radius: var(--radius-pill);
   font-family: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 12px;
-  /*font-weight: 700;*/
+  font-size: var(--text-sm);
   text-transform: uppercase;
   letter-spacing: 1px;
   color: var(--color-white);
@@ -31,7 +30,7 @@
 }
 
 .cart {
-  background-color: var(--color-cta);
+  background-color: var(--color-accent);
 }
 
 .disabled {

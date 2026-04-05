@@ -45,37 +45,59 @@ const DEFAULT_TYPOGRAPHY = LAYOUT_TYPOGRAPHY.pattern
 
 // Swatch hex lookups — mirror the arrays in useConfigurator so PosterPreview
 // doesn't need to receive the raw swatch data. Kept local because this is the
-// only consumer and the lists are short.
+// only consumer and the lists are short. Both solid colors and patterns tint
+// the content-zone background (they're mutually exclusive ways to set the
+// same surface). `none` is intentionally not in SOLID_COLOR_HEX — the lookup
+// returns undefined and the conditional below falls through to "no fill".
 const SOLID_COLOR_HEX = {
-  coral: '#E8745A',
   charcoal: '#2D2D2D',
+  coral: '#E8745A',
   forest: '#4A6741',
   'slate-blue': '#3B5998',
   'saddle-brown': '#8B4513',
   goldenrod: '#DAA520',
+  burgundy: '#7B1F2B',
+  teal: '#2F6F6B',
 }
 
 const PATTERN_HEX = {
   cream: '#F5E6D3',
-  wheat: '#E8D5B7',
-  sand: '#D4C5A9',
-  khaki: '#C0B59B',
-  sage: '#ACA58D',
+  blush: '#F8D7D1',
+  sage: '#CFDBC5',
+  sky: '#D6E4F0',
+  butter: '#F5E6A8',
+  lilac: '#E4D7EE',
 }
 
-const DEFAULT_TEXT_COLOR = '#2D2D2D'
+// Poster text is always rendered in near-black. Color selection drives the
+// *background* now (not the text), so there's no longer a user-controlled
+// text color.
+const TEXT_COLOR = '#2D2D2D'
+
+// Ghost placeholder shown inside the poster frame before the user has typed
+// anything. Uses the same typography as the currently-selected layout so the
+// preview doubles as a live demonstration of what their text will look like.
+const GHOST_PLACEHOLDER = 'YOUR TEXT'
 
 export function PosterPreview({ text, layout, orientation, color, pattern, activeTab }) {
   const typography = layout ? LAYOUT_TYPOGRAPHY[layout] : DEFAULT_TYPOGRAPHY
-  const textColor = color ? SOLID_COLOR_HEX[color] ?? DEFAULT_TEXT_COLOR : DEFAULT_TEXT_COLOR
-  const patternColor = pattern ? PATTERN_HEX[pattern] : null
+  const isEmpty = text.length === 0
+  const displayText = isEmpty ? GHOST_PLACEHOLDER : text
 
-  // Pattern background: 45° diagonal stripes, 3px band with 6px repeat (per
-  // specs.md State 4). Alternating band is a soft overlay so the underlying
-  // swatch hue is dominant.
-  const contentZoneBackground = patternColor
-    ? `repeating-linear-gradient(45deg, ${patternColor} 0 3px, rgba(0, 0, 0, 0.08) 3px 6px)`
-    : 'transparent'
+  // Content-zone background: solid fill wins over pattern (they're mutually
+  // exclusive in the hook, but this order makes the precedence explicit). The
+  // `none` color id intentionally has no entry in SOLID_COLOR_HEX so it falls
+  // through to the pattern branch and, if no pattern either, to transparent.
+  // Pattern rendering: 45° diagonal stripes, 3px band with 6px repeat, with a
+  // soft dark overlay so the underlying hue stays dominant (per specs.md).
+  const solidHex = color ? SOLID_COLOR_HEX[color] : null
+  const patternHex = pattern ? PATTERN_HEX[pattern] : null
+  let contentZoneBackground = 'transparent'
+  if (solidHex) {
+    contentZoneBackground = solidHex
+  } else if (patternHex) {
+    contentZoneBackground = `repeating-linear-gradient(45deg, ${patternHex} 0 3px, rgba(0, 0, 0, 0.08) 3px 6px)`
+  }
 
   const isVertical = orientation === 'vertical'
   const isCircular = layout === 'circular'
@@ -90,6 +112,7 @@ export function PosterPreview({ text, layout, orientation, color, pattern, activ
           className={styles.bgImage}
           draggable={false}
           decoding="async"
+          fetchpriority="high"
         />
         <div
           className={styles.contentZone}
@@ -100,17 +123,19 @@ export function PosterPreview({ text, layout, orientation, color, pattern, activ
               styles.textWrap,
               isVertical ? styles.vertical : '',
               isCircular ? styles.circular : '',
+              isEmpty ? styles.ghost : '',
             ].filter(Boolean).join(' ')}
             style={{
-              color: textColor,
+              color: TEXT_COLOR,
               fontFamily: typography.fontFamily,
               fontSize: typography.fontSize,
               fontWeight: typography.fontWeight,
               letterSpacing: typography.letterSpacing,
               textTransform: typography.textTransform,
             }}
+            aria-hidden={isEmpty || undefined}
           >
-            {text}
+            {displayText}
           </div>
         </div>
       </div>

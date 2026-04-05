@@ -76,9 +76,9 @@ export function ProductSelector({
             ))}
           </div>
 
-          {/* Product description (no price) */}
+          {/* Product description (per-product, no price) */}
           <p className={styles.descriptionText}>
-            Printed on high quality super heavy nice paper
+            {product.description}
           </p>
 
           {product.supportsFrames && (

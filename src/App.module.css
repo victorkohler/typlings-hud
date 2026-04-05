@@ -11,6 +11,12 @@
   justify-content: flex-end;
   /* Containing block for the absolutely-positioned PosterPreview. */
   position: relative;
+  /* `100vh` is the fallback for browsers without `dvh` support (Instagram /
+     Facebook in-app browsers on older iOS and Firefox Android < 108). Modern
+     engines override it with `100dvh` on the line below, which tracks the
+     iOS Safari URL bar collapse so the HUD + CTA stay pinned to the real
+     viewport bottom rather than a fixed vh snapshot. */
+  height: 100vh;
   height: 100dvh;
   background-color: var(--color-bg-warm);
   overflow: hidden;

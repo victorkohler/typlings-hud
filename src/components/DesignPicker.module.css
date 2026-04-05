@@ -1,10 +1,83 @@
 .container {
-  flex: 1;
   padding: var(--space-lg);
-  overflow-y: auto;
 }
 
-.placeholder {
-  color: var(--color-text-secondary);
-  font-size: 14px;
+/* Section header — mirrors ProductSelector's italic section label so State 4
+   reads in the same language as State 1. */
+.sectionHeader {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: var(--space-md);
+}
+
+.sectionLabel {
+  font-style: italic;
+  font-size: var(--text-md);
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.divider {
+  border: none;
+  height: 1px;
+  background: #E5E5E5;
+  margin: var(--space-lg) 0;
+}
+
+/* Swatch row — flex-start with a fixed gap so every swatch sits the same
+   distance from its neighbours regardless of how many there are. The row
+   wraps on narrow viewports (9 background colors don't fit in one line at
+   375px), which is intentional: a wrapped second row reads cleaner than
+   shrinking swatches or using an adaptive `space-between` that would shift
+   gaps when counts change. Vertical padding reserves room for the 1.15×
+   selected transform so the grown swatch isn't clipped by the divider below.
+   `row-gap` is slightly larger than `column-gap` so wrapped rows sit on an
+   obvious second baseline. */
+.swatchRow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+  column-gap: var(--space-md);
+  row-gap: var(--space-md);
+  padding: var(--space-xs) 0;
+}
+
+/* Swatch — 32×32 circle. Border starts at 1.5px in the neutral swatch gray,
+   transitions to 2.5px accent + scale(1.15) when selected. `box-sizing:
+   border-box` keeps the dimensional footprint stable as the border width
+   changes so the scale transform is the only visible growth. */
+.swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-border-swatch);
+  padding: 0;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: border-color var(--duration-normal) ease,
+              border-width var(--duration-normal) ease,
+              transform var(--duration-normal) ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.swatch.selected {
+  border-width: 2.5px;
+  border-color: var(--color-accent);
+  transform: scale(1.15);
+}
+
+/* "No background" swatch — white circle with a single gray diagonal line
+   cutting corner-to-corner, mirroring the Photoshop "no fill" convention.
+   The gradient has hard stops on either side of a 2px band that renders the
+   line; the rest is solid white. The existing 1.5px border on `.swatch`
+   provides the outline. */
+.swatch.swatchNone {
+  background:
+    linear-gradient(
+      135deg,
+      var(--color-white) 0 calc(50% - 1px),
+      var(--color-border-swatch) calc(50% - 1px) calc(50% + 1px),
+      var(--color-white) calc(50% + 1px) 100%
+    );
 }

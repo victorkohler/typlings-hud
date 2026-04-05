@@ -159,6 +159,30 @@ export function LayoutPicker({
 
   return (
     <div className={styles.container}>
+      <div className={styles.orientationWrap}>
+        <div className={styles.orientationToggle} role="group" aria-label="Orientation">
+          {/* Sliding pill — absolutely positioned. Its `transform` (x-offset)
+              and `width` are set inline from the useLayoutEffect above, based
+              on the active button's measured offsetLeft/offsetWidth, so the
+              pill exactly wraps whichever label is selected. */}
+          <div ref={indicatorRef} className={styles.orientationIndicator} aria-hidden="true" />
+          <button
+            ref={horizontalBtnRef}
+            className={`${styles.orientationButton} ${orientation === 'horizontal' ? styles.active : ''}`}
+            onClick={() => onSetOrientation('horizontal')}
+          >
+            Horizontal
+          </button>
+          <button
+            ref={verticalBtnRef}
+            className={`${styles.orientationButton} ${orientation === 'vertical' ? styles.active : ''}`}
+            onClick={() => onSetOrientation('vertical')}
+          >
+            Vertical
+          </button>
+        </div>
+      </div>
+
       <div
         ref={scrollerRef}
         className={`${styles.scroller} ${isDragging ? styles.dragging : ''}`}
@@ -183,30 +207,6 @@ export function LayoutPicker({
             </button>
           )
         })}
-      </div>
-
-      <div className={styles.orientationWrap}>
-        <div className={styles.orientationToggle} role="group" aria-label="Orientation">
-          {/* Sliding pill — absolutely positioned. Its `transform` (x-offset)
-              and `width` are set inline from the useLayoutEffect above, based
-              on the active button's measured offsetLeft/offsetWidth, so the
-              pill exactly wraps whichever label is selected. */}
-          <div ref={indicatorRef} className={styles.orientationIndicator} aria-hidden="true" />
-          <button
-            ref={horizontalBtnRef}
-            className={`${styles.orientationButton} ${orientation === 'horizontal' ? styles.active : ''}`}
-            onClick={() => onSetOrientation('horizontal')}
-          >
-            Horizontal
-          </button>
-          <button
-            ref={verticalBtnRef}
-            className={`${styles.orientationButton} ${orientation === 'vertical' ? styles.active : ''}`}
-            onClick={() => onSetOrientation('vertical')}
-          >
-            Vertical
-          </button>
-        </div>
       </div>
     </div>
   )

@@ -5,7 +5,7 @@
 /* Italic title — "Typling products" */
 .sectionTitle {
   font-style: italic;
-  font-size: 14px;
+  font-size: var(--text-md);
   font-weight: 500;
   color: var(--color-text-primary);
   margin-bottom: var(--space-lg);
@@ -14,7 +14,7 @@
 /* Italic label — reused for "Select size" / "Select Frame" headers */
 .sectionLabel {
   font-style: italic;
-  font-size: 14px;
+  font-size: var(--text-md);
   font-weight: 500;
   color: var(--color-text-primary);
 }
@@ -29,7 +29,7 @@
 
 /* Shared "Size guide" / "Our frames" link */
 .sectionLink {
-  font-size: 12px;
+  font-size: var(--text-sm);
   font-weight: 400;
   color: var(--color-text-primary);
   text-decoration: underline;
@@ -100,7 +100,7 @@
 
 .productLabel {
   padding-top: var(--space-sm);
-  font-size: 14px;
+  font-size: var(--text-md);
   font-weight: 400;
   color: var(--color-text-primary);
 }
@@ -130,7 +130,7 @@
   border: 1px solid var(--color-border-input);
   background: var(--color-white);
   cursor: pointer;
-  font-size: 14px;
+  font-size: var(--text-md);
   font-weight: 500;
   color: var(--color-text-secondary);
   transition: border-color var(--duration-normal) ease,
@@ -151,12 +151,12 @@
 }
 
 .sizePill.selected .sizePrice {
-  font-weight: 600;
+  /*font-weight: 600;*/
 }
 
 .descriptionText {
   margin-top: 10px;
-  font-size: 12px;
+  font-size: var(--text-sm);
   font-style: italic;
   color: var(--color-text-secondary);
 }
@@ -173,22 +173,32 @@
   background: var(--color-surface-thumbnail);
   border-radius: var(--radius-sm);
   border: 1px solid transparent;
-  transition: border-color var(--duration-normal) ease;
+  transition: background var(--duration-normal) ease,
+              border-color var(--duration-normal) ease;
 }
 
+/* Selected state mirrors `LayoutPicker.card.selected .thumb` exactly — accent
+   border, faint warm-pink fill, and accent label — so the two "pick one from
+   a row of cards" controls read as the same language across states. */
 .frameCard.selected .frameThumbnail {
+  background: var(--color-surface-card-selected);
   border-color: var(--color-accent);
 }
 
 .frameName {
-  font-size: 12px;
+  font-size: var(--text-sm);
   font-weight: 400;
   color: #000000;
   padding-top: 6px;
+  transition: color var(--duration-normal) ease;
+}
+
+.frameCard.selected .frameName {
+  color: var(--color-accent);
 }
 
 .framePriceDelta {
-  font-size: 12px;
+  font-size: var(--text-sm);
   font-weight: 400;
   color: var(--color-text-secondary);
   padding-top: 2px;

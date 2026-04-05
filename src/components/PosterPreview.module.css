@@ -54,7 +54,15 @@
   line-height: 1.2;
   word-break: break-word;
   white-space: pre-wrap;
-  transition: color var(--duration-normal) ease;
+  transition: color var(--duration-normal) ease, opacity var(--duration-normal) ease;
+}
+
+/* Ghost placeholder state — shown inside the poster frame before the user has
+   typed anything. Inherits the layout's typography + current text color from
+   the inline style, and simply fades to ~25% so it reads as a hint rather
+   than live text. */
+.ghost {
+  opacity: 0.25;
 }
 
 .vertical {

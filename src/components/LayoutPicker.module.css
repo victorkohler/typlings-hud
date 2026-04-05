@@ -90,7 +90,7 @@
 
 .cardLabel {
   padding-top: 6px;
-  font-size: 12px;
+  font-size: var(--text-sm);
   font-weight: 400;
   color: var(--color-text-secondary);
   transition: color var(--duration-normal) ease;
@@ -100,13 +100,15 @@
   color: var(--color-accent);
 }
 
-/* Orientation toggle — centered pill with two segments. Has its own
-   horizontal padding because .container no longer does (the scroller needed
-   to extend edge-to-edge). */
+/* Orientation toggle — centered pill with two segments. Sits above the
+   layout card scroller so the orientation choice frames the layout options
+   rather than trailing them. Has its own horizontal padding because
+   .container no longer does (the scroller needs to extend edge-to-edge). */
 .orientationWrap {
   display: flex;
   justify-content: center;
-  margin-top: var(--space-xl);
+  margin-top: var(--space-md);
+  margin-bottom: var(--space-xl);
   padding: 0 var(--space-lg);
 }
 
@@ -146,7 +148,7 @@
   position: relative;
   z-index: 1;
   padding: 8px 20px;
-  font-size: 12px;
+  font-size: var(--text-sm);
   font-weight: 600;
   font-family: inherit;
   border: none;

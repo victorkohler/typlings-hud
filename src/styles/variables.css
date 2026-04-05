@@ -18,29 +18,37 @@ html, body {
 
 :root {
   /* Brand */
-  --color-accent: #e8331a;
-  --color-cta: #e74024;
+  /* One red, used for every interactive accent: active tab, selected borders,
+     focus rings, completion badges, and the States 2–4 CTA background. */
+  --color-accent: #e74024;
   --color-cta-product: #2D2D2D;
-  --color-cta-disabled: #C8C4BC;
 
   /* Text */
   --color-text-primary: #333333;
   --color-text-secondary: #999999;
-  --color-text-muted: #666666;
   --color-white: #FFFFFF;
   --color-bg-warm: #F5F0E8;
 
   /* Surfaces */
-  --color-surface-card: #E8E4DC;
   --color-surface-card-selected: #FDF5F2;
-  --color-surface-card-accent: #FCE8E4;
   --color-surface-thumbnail: #e4e4e4;
-  --color-border-subtle: #F0ECE4;
   --color-border-input: #E0DCD4;
+  /* Hairline outline around DesignPicker swatches — a warm gray that stays
+     visible against white swatches (cream, blush) without competing with the
+     accent border applied to the selected swatch. */
   --color-border-swatch: #D0CCC4;
 
   /* Shadows */
   --shadow-hud: 0 -6px 24px rgba(0, 0, 0, 0.15);
+
+  /* Font sizes — UI chrome uses exactly three steps. The textarea body is an
+     intentional fourth value at 16px (kept inline with a comment in
+     TextPersonalizer.module.css) because iOS Safari auto-zooms any input
+     below 16px on focus. Poster-display typography in PosterPreview uses
+     per-layout sizes and is not part of this scale. */
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-md: 14px;
 
   /* Spacing */
   --space-xs: 4px;
