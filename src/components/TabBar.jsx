@@ -76,7 +76,7 @@ const PRODUCT_ICON = {
   'baby-body': IconBabyBody,
 }
 
-export function TabBar({ tabs, activeTab, onTabChange, completions, selectedProductId, selectedProductName }) {
+export function TabBar({ tabs, activeTab, onTabChange, onTabPointerDown, completions, selectedProductId, selectedProductName }) {
   const activeIndex = tabs.indexOf(activeTab)
 
   return (
@@ -102,6 +102,7 @@ export function TabBar({ tabs, activeTab, onTabChange, completions, selectedProd
           <button
             key={tabId}
             className={`${styles.tab} ${isActive ? styles.active : ''}`}
+            onPointerDown={onTabPointerDown}
             onClick={() => onTabChange(tabId)}
           >
             <span className={styles.iconWrap}>

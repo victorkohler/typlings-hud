@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import styles from './App.module.css'
 import { useConfigurator } from './hooks/useConfigurator'
 import { PosterPreview } from './components/PosterPreview'
@@ -21,16 +21,34 @@ export default function App() {
   const config = useConfigurator()
   const [hudCollapsed, setHudCollapsed] = useState(false)
 
+  // Captures whether a textarea was focused at the *start* of a tab tap
+  // (pointerdown), before Safari has a chance to move focus onto the button
+  // and implicitly blur the textarea. Read in `handleTabChange` below to
+  // decide whether to stagger the tab transition behind the keyboard dismiss.
+  //
+  // Why not just check `document.activeElement` in the click handler? On
+  // mobile Safari, pointerdown on a button moves focus away from the textarea
+  // *before* the click event fires — so by the time onClick runs, the
+  // textarea has already blurred and `activeElement` is the button (or body).
+  // The old code checked activeElement in onClick and never entered the
+  // deferred branch in practice, which is why bumping `KEYBOARD_DISMISS_MS`
+  // had zero effect on timing.
+  const textareaWasFocusedRef = useRef(false)
+
+  const handleTabPointerDown = () => {
+    textareaWasFocusedRef.current = document.activeElement?.tagName === 'TEXTAREA'
+  }
+
   // Tapping the active tab toggles the HUD into a collapsed state where only
   // the TabBar + CartButton are visible (tab content is unmounted), giving
   // the user a clearer view of the poster preview behind. Tapping the same
   // tab again re-expands it; tapping a different tab switches tabs and
   // re-expands at the same time.
   //
-  // If a textarea is currently focused (State 2), we blur it first and defer
-  // the actual tab change by ~250ms so the iOS keyboard can finish dismissing
-  // before the HUD starts animating — transitioning on top of a closing
-  // keyboard looks chaotic on device.
+  // If a textarea was focused at pointerdown (State 2), we blur it and defer
+  // the actual tab change by `KEYBOARD_DISMISS_MS` so the iOS keyboard can
+  // finish dismissing before the HUD starts animating — running both
+  // animations simultaneously looks chaotic on device.
   const handleTabChange = (nextTab) => {
     const apply = () => {
       if (nextTab === config.activeTab) {
@@ -41,9 +59,13 @@ export default function App() {
       }
     }
 
-    const active = document.activeElement
-    if (active && active.tagName === 'TEXTAREA') {
-      active.blur()
+    if (textareaWasFocusedRef.current) {
+      textareaWasFocusedRef.current = false
+      // Explicitly blur in case Safari hasn't already done so. On most mobile
+      // browsers the pointerdown on the button has already blurred it, but
+      // this makes the branch self-consistent across platforms.
+      const el = document.activeElement
+      if (el && typeof el.blur === 'function') el.blur()
       setTimeout(apply, KEYBOARD_DISMISS_MS)
     } else {
       apply()
@@ -114,6 +136,7 @@ export default function App() {
             tabs={config.TABS}
             activeTab={config.activeTab}
             onTabChange={handleTabChange}
+            onTabPointerDown={handleTabPointerDown}
             completions={config.completions}
             selectedProductId={config.selectedProduct}
             selectedProductName={config.product?.name}
