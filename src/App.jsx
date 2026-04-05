@@ -15,7 +15,7 @@ import { CartButton } from './components/CartButton'
 // transition so the two animations don't overlap — overlapping reads as
 // jittery on device. 280ms lands us at ~93% of the dismiss with a small
 // safety margin before the HUD animation begins.
-const KEYBOARD_DISMISS_MS = 350
+const KEYBOARD_DISMISS_MS = 1000
 
 export default function App() {
   const config = useConfigurator()
