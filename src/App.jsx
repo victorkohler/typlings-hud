@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import styles from './App.module.css'
 import { useConfigurator } from './hooks/useConfigurator'
 import { PosterPreview } from './components/PosterPreview'
@@ -9,8 +10,43 @@ import { LayoutPicker } from './components/LayoutPicker'
 import { DesignPicker } from './components/DesignPicker'
 import { CartButton } from './components/CartButton'
 
+// Rough iOS keyboard dismiss animation duration. Used to stagger the HUD
+// transition *after* the keyboard has finished closing so the two animations
+// don't run on top of each other.
+const KEYBOARD_DISMISS_MS = 250
+
 export default function App() {
   const config = useConfigurator()
+  const [hudCollapsed, setHudCollapsed] = useState(false)
+
+  // Tapping the active tab toggles the HUD into a collapsed state where only
+  // the TabBar + CartButton are visible (tab content is unmounted), giving
+  // the user a clearer view of the poster preview behind. Tapping the same
+  // tab again re-expands it; tapping a different tab switches tabs and
+  // re-expands at the same time.
+  //
+  // If a textarea is currently focused (State 2), we blur it first and defer
+  // the actual tab change by ~250ms so the iOS keyboard can finish dismissing
+  // before the HUD starts animating — transitioning on top of a closing
+  // keyboard looks chaotic on device.
+  const handleTabChange = (nextTab) => {
+    const apply = () => {
+      if (nextTab === config.activeTab) {
+        setHudCollapsed((prev) => !prev)
+      } else {
+        setHudCollapsed(false)
+        config.setActiveTab(nextTab)
+      }
+    }
+
+    const active = document.activeElement
+    if (active && active.tagName === 'TEXTAREA') {
+      active.blur()
+      setTimeout(apply, KEYBOARD_DISMISS_MS)
+    } else {
+      apply()
+    }
+  }
 
   const tabContent = {
     product: (
@@ -54,6 +90,7 @@ export default function App() {
 
   const handleCtaAction = () => {
     if (config.activeTab === 'product') {
+      setHudCollapsed(false)
       config.advanceFromProduct()
     }
   }
@@ -66,6 +103,7 @@ export default function App() {
         orientation={config.orientation}
         color={config.selectedColor}
         pattern={config.selectedPattern}
+        activeTab={config.activeTab}
       />
 
       <HudPanel
@@ -73,14 +111,14 @@ export default function App() {
           <TabBar
             tabs={config.TABS}
             activeTab={config.activeTab}
-            onTabChange={config.setActiveTab}
+            onTabChange={handleTabChange}
             completions={config.completions}
             selectedProductId={config.selectedProduct}
             selectedProductName={config.product?.name}
           />
         }
       >
-        {tabContent[config.activeTab]}
+        {hudCollapsed ? null : tabContent[config.activeTab]}
       </HudPanel>
 
       <CartButton

@@ -1,15 +1,102 @@
 .container {
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 0;
   position: relative;
   overflow: hidden;
+  background: var(--color-bg-warm);
 }
 
-.placeholder {
+/* The stage matches the background image's intrinsic aspect ratio (431 × 932
+   — designed to fill an iPhone Pro Max viewport). Pinning width to 100% lets
+   the stage scale with the container while the aspect-ratio keeps the frame's
+   position inside the image perfectly mapped to the content-zone percentages
+   below. When the container is shorter than the stage (e.g. State 1 with the
+   HUD expanded), the stage overflows downward and the container clips it —
+   top of the frame stays visible. */
+.stage {
+  width: 100%;
+  aspect-ratio: 431 / 932;
+  position: relative;
+}
+
+.bgImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Content zone is positioned in percentages of the stage (= percentages of
+   the image, because the stage matches image aspect). Numbers come from
+   design/specs.md. */
+.contentZone {
   position: absolute;
-  inset: 0;
+  top: 13%;
+  left: 16%;
+  width: 68%;
+  height: 62%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-text-secondary);
-  font-size: 14px;
+  padding: var(--space-lg);
+  transition: background var(--duration-normal) ease;
+}
+
+.textWrap {
+  max-width: 100%;
+  max-height: 100%;
+  text-align: center;
+  line-height: 1.2;
+  word-break: break-word;
+  white-space: pre-wrap;
+  transition: color var(--duration-normal) ease;
+}
+
+.vertical {
+  transform: rotate(-90deg);
+  transform-origin: center center;
+}
+
+.circular {
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  aspect-ratio: 1 / 1;
+  width: auto;
+  padding: var(--space-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Carousel dots — decorative only (no swipe functionality). Pill container
+   floats near the bottom of the preview area. Hidden in State 1 via
+   conditional rendering in the component. */
+.dots {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(0, 0, 0, 0.18);
+}
+
+.dotActive {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.28);
 }
