@@ -40,7 +40,7 @@ html, body {
   --color-border-swatch: #D0CCC4;
 
   /* Shadows */
-  --shadow-hud: 0 -4px 24px rgba(0, 0, 0, 0.08);
+  --shadow-hud: 0 -6px 24px rgba(0, 0, 0, 0.15);
 
   /* Spacing */
   --space-xs: 4px;

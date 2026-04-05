@@ -10,10 +10,12 @@ import { LayoutPicker } from './components/LayoutPicker'
 import { DesignPicker } from './components/DesignPicker'
 import { CartButton } from './components/CartButton'
 
-// Rough iOS keyboard dismiss animation duration. Used to stagger the HUD
-// transition *after* the keyboard has finished closing so the two animations
-// don't run on top of each other.
-const KEYBOARD_DISMISS_MS = 250
+// iOS keyboard dismiss animation runs ~300ms end-to-end on recent devices.
+// We wait for it to be 80–90% complete before kicking off the HUD/tab
+// transition so the two animations don't overlap — overlapping reads as
+// jittery on device. 280ms lands us at ~93% of the dismiss with a small
+// safety margin before the HUD animation begins.
+const KEYBOARD_DISMISS_MS = 280
 
 export default function App() {
   const config = useConfigurator()

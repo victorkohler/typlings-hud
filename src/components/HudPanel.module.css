@@ -7,6 +7,16 @@
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
+  /* Load-bearing: `PosterPreview.container` is `position: absolute; inset: 0`
+     — a full-viewport background layer. Under CSS 2.1 painting order,
+     positioned elements paint in step 8 after non-positioned blocks (step 4).
+     A static HudPanel would paint *behind* the absolute preview, and the
+     preview's bg + image would cover HudPanel entirely. Making HudPanel
+     `position: relative` puts it in step 8 alongside PosterPreview, where
+     tree order wins — HudPanel is the later sibling so it paints on top of
+     the preview (shadow + white body above image, rounded corner notches
+     transparently revealing image content behind). */
+  position: relative;
 }
 
 /* Non-scrolling header region (TabBar) — stays pinned when content scrolls */

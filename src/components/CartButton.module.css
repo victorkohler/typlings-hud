@@ -2,6 +2,12 @@
   padding: var(--space-md) var(--space-lg) var(--space-xl);
   background: var(--color-white);
   flex-shrink: 0;
+  /* PosterPreview is `position: absolute` (full-viewport background layer),
+     which places it in CSS paint step 8. A non-positioned CartButton would
+     paint in step 4 and be covered by PosterPreview. Making CartButton
+     `position: relative` moves it into step 8 too, where tree order wins
+     and later siblings (HudPanel, CartButton) paint on top of PosterPreview. */
+  position: relative;
 }
 
 .button {

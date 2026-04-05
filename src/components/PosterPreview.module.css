@@ -1,7 +1,10 @@
 .container {
-  flex: 1 1 auto;
-  min-height: 0;
-  position: relative;
+  /* Full-viewport background layer. `.app` is the containing block
+     (position: relative). The preview extends the entire viewport height so
+     the image shows through the HUD's rounded corner notches — HUD + CTA are
+     painted on top in tree order. */
+  position: absolute;
+  inset: 0;
   overflow: hidden;
   background: var(--color-bg-warm);
 }
