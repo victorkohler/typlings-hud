@@ -122,6 +122,8 @@ export function CartConfirmModal({
     <>
       <div className={styles.backdrop} onClick={onCancel}>
         <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+          <h2 className={styles.heading}>Your finished design</h2>
+          <p className={styles.subheading}>Take a final look so everything is correct</p>
           <div className={styles.previewWrap}>
             <div className={styles.previewFrame}>
               <div

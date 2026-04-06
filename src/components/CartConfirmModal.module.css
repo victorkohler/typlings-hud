@@ -15,8 +15,23 @@
   border-radius: var(--radius-md);
   padding: var(--space-xl);
   width: 100%;
-  max-width: 320px;
+  max-width: 360px;
   animation: slideUp var(--duration-slow) var(--ease-panel);
+}
+
+.heading {
+  font-size: var(--text-lg);
+  font-weight: 500;
+  color: var(--color-text-primary);
+  text-align: left;
+  margin-bottom: var(--space-xs);
+}
+
+.subheading {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  text-align: left;
+  margin-bottom: var(--space-lg);
 }
 
 /* Poster preview wrapper — positions the expand button relative to the frame */
