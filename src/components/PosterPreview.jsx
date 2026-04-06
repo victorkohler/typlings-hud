@@ -79,7 +79,7 @@ const TEXT_COLOR = '#2D2D2D'
 // preview doubles as a live demonstration of what their text will look like.
 const GHOST_PLACEHOLDER = 'YOUR TEXT'
 
-export function PosterPreview({ text, layout, orientation, color, pattern, activeTab }) {
+export function PosterPreview({ text, layout, orientation, color, pattern, activeTab, onClick }) {
   const typography = layout ? LAYOUT_TYPOGRAPHY[layout] : DEFAULT_TYPOGRAPHY
   const isEmpty = text.length === 0
   const displayText = isEmpty ? GHOST_PLACEHOLDER : text
@@ -104,7 +104,7 @@ export function PosterPreview({ text, layout, orientation, color, pattern, activ
   const showDots = activeTab !== 'product'
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} onClick={onClick}>
       <div className={styles.stage}>
         <img
           src={bgPoster}

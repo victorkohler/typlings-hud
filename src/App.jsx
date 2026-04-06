@@ -128,6 +128,7 @@ export default function App() {
         color={config.selectedColor}
         pattern={config.selectedPattern}
         activeTab={config.activeTab}
+        onClick={() => setHudCollapsed(true)}
       />
 
       <HudPanel

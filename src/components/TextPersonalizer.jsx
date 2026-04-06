@@ -26,7 +26,7 @@ export function TextPersonalizer({ text, onTextChange }) {
   // Android WebViews occasionally do). The native attribute still handles the
   // common typing case so the caret behaves correctly.
   const handleChange = (e) => {
-    const next = e.target.value.slice(0, MAX_TEXT_LENGTH)
+    const next = e.target.value.toUpperCase().slice(0, MAX_TEXT_LENGTH)
     onTextChange(next)
   }
 
