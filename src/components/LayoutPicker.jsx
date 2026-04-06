@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import styles from './LayoutPicker.module.css'
+import sectionStyles from '../styles/sections.module.css'
 
 // `specs.md` State 3 — drag-to-scroll velocity multiplier
 const DRAG_VELOCITY = 1.5
@@ -159,12 +160,12 @@ export function LayoutPicker({
 
   return (
     <div className={styles.container}>
+      {/* Orientation section */}
+      <div className={`${sectionStyles.sectionHeader} ${styles.labelRow}`}>
+        <span className={sectionStyles.sectionLabel}>Orientation</span>
+      </div>
       <div className={styles.orientationWrap}>
         <div className={styles.orientationToggle} role="group" aria-label="Orientation">
-          {/* Sliding pill — absolutely positioned. Its `transform` (x-offset)
-              and `width` are set inline from the useLayoutEffect above, based
-              on the active button's measured offsetLeft/offsetWidth, so the
-              pill exactly wraps whichever label is selected. */}
           <div ref={indicatorRef} className={styles.orientationIndicator} aria-hidden="true" />
           <button
             ref={horizontalBtnRef}
@@ -183,6 +184,10 @@ export function LayoutPicker({
         </div>
       </div>
 
+      {/* Layout section */}
+      <div className={`${sectionStyles.sectionHeader} ${styles.labelRow}`}>
+        <span className={sectionStyles.sectionLabel}>Layout</span>
+      </div>
       <div
         ref={scrollerRef}
         className={`${styles.scroller} ${isDragging ? styles.dragging : ''}`}

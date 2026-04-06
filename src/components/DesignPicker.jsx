@@ -1,4 +1,5 @@
 import styles from './DesignPicker.module.css'
+import sectionStyles from '../styles/sections.module.css'
 
 export function DesignPicker({
   solidColors,
@@ -15,8 +16,8 @@ export function DesignPicker({
           `none` sentinel, rendered as a white circle with a gray diagonal
           line. It's the pre-selected default so the poster starts with no
           background fill. */}
-      <div className={styles.sectionHeader}>
-        <span className={styles.sectionLabel}>Background color</span>
+      <div className={sectionStyles.sectionHeader}>
+        <span className={sectionStyles.sectionLabel}>Background color</span>
       </div>
       <div className={styles.swatchRow}>
         {solidColors.map((color) => {
@@ -35,11 +36,11 @@ export function DesignPicker({
         })}
       </div>
 
-      <hr className={styles.divider} />
+      <hr className={sectionStyles.divider} />
 
       {/* Background pattern section */}
-      <div className={styles.sectionHeader}>
-        <span className={styles.sectionLabel}>Background pattern</span>
+      <div className={sectionStyles.sectionHeader}>
+        <span className={sectionStyles.sectionLabel}>Background pattern</span>
       </div>
       <div className={styles.swatchRow}>
         {patterns.map((pattern) => (

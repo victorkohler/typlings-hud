@@ -1,4 +1,5 @@
 import styles from './ProductSelector.module.css'
+import sectionStyles from '../styles/sections.module.css'
 
 function formatPrice(price) {
   return `${price}kr`
@@ -27,7 +28,7 @@ export function ProductSelector({
   return (
     <div className={styles.container}>
       {/* Section title */}
-      <h2 className={styles.sectionTitle}>Typling products</h2>
+      <h2 className={sectionStyles.sectionTitle}>Typling products</h2>
 
       {/* Product grid */}
       <div className={styles.productGrid}>
@@ -54,14 +55,14 @@ export function ProductSelector({
         ))}
       </div>
 
-      <hr className={styles.divider} />
+      <hr className={sectionStyles.divider} />
 
       {product && (
         <>
           {/* Size selector */}
-          <div className={styles.sectionHeader}>
-            <span className={styles.sectionLabel}>Select size</span>
-            <button className={styles.sectionLink}>Size guide</button>
+          <div className={sectionStyles.sectionHeader}>
+            <span className={sectionStyles.sectionLabel}>Select size</span>
+            <button className={sectionStyles.sectionLink}>Size guide</button>
           </div>
           <div className={`${styles.sizeList} ${product.sizes.length > 3 ? styles.sizeListGrid : ''}`}>
             {product.sizes.map((size) => (
@@ -83,12 +84,12 @@ export function ProductSelector({
 
           {product.supportsFrames && (
             <>
-              <hr className={styles.divider} />
+              <hr className={sectionStyles.divider} />
 
               {/* Frame selector */}
-              <div className={styles.sectionHeader}>
-                <span className={styles.sectionLabel}>Select Frame</span>
-                <button className={styles.sectionLink}>Our frames</button>
+              <div className={sectionStyles.sectionHeader}>
+                <span className={sectionStyles.sectionLabel}>Select Frame</span>
+                <button className={sectionStyles.sectionLink}>Our frames</button>
               </div>
               <div className={styles.frameRow}>
                 {frames.map((frame) => {

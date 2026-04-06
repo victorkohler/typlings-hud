@@ -20,6 +20,9 @@
   width: 100%;
   aspect-ratio: 431 / 932;
   position: relative;
+  /* Pull the entire stage (image + content zone) upward so the poster frame
+     sits higher in the viewport. */
+  top: -50px;
 }
 
 .bgImage {

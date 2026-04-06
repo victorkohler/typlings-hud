@@ -1,48 +1,8 @@
+/* Section title, labels, links, dividers are imported from
+   src/styles/sections.module.css — see sectionStyles in the JSX. */
+
 .container {
   padding: var(--space-lg);
-}
-
-/* Italic title — "Typling products" */
-.sectionTitle {
-  font-style: italic;
-  font-size: var(--text-md);
-  font-weight: 500;
-  color: var(--color-text-primary);
-  margin-bottom: var(--space-lg);
-}
-
-/* Italic label — reused for "Select size" / "Select Frame" headers */
-.sectionLabel {
-  font-style: italic;
-  font-size: var(--text-md);
-  font-weight: 500;
-  color: var(--color-text-primary);
-}
-
-/* Shared header row for size + frame sections */
-.sectionHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: var(--space-md);
-}
-
-/* Shared "Size guide" / "Our frames" link */
-.sectionLink {
-  font-size: var(--text-sm);
-  font-weight: 400;
-  color: var(--color-text-primary);
-  text-decoration: underline;
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.divider {
-  border: none;
-  height: 1px;
-  background: #E5E5E5;
-  margin: 20px 0;
 }
 
 /* Product grid — 3 columns, reserves a slot for a future third product */
@@ -103,6 +63,11 @@
   font-size: var(--text-md);
   font-weight: 400;
   color: var(--color-text-primary);
+  transition: color var(--duration-normal) ease;
+}
+
+.productCard.selected .productLabel {
+  color: var(--color-accent);
 }
 
 /* Size selector — horizontal row, pills share the row evenly */

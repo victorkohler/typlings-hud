@@ -1,27 +1,8 @@
+/* Section header, label, divider are imported from
+   src/styles/sections.module.css — see sectionStyles in the JSX. */
+
 .container {
   padding: var(--space-lg);
-}
-
-/* Section header — mirrors ProductSelector's italic section label so State 4
-   reads in the same language as State 1. */
-.sectionHeader {
-  display: flex;
-  align-items: baseline;
-  margin-bottom: var(--space-md);
-}
-
-.sectionLabel {
-  font-style: italic;
-  font-size: var(--text-md);
-  font-weight: 500;
-  color: var(--color-text-primary);
-}
-
-.divider {
-  border: none;
-  height: 1px;
-  background: #E5E5E5;
-  margin: var(--space-lg) 0;
 }
 
 /* Swatch row — flex-start with a fixed gap so every swatch sits the same

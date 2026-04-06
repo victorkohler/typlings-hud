@@ -100,14 +100,19 @@
   color: var(--color-accent);
 }
 
-/* Orientation toggle — centered pill with two segments. Sits above the
-   layout card scroller so the orientation choice frames the layout options
-   rather than trailing them. Has its own horizontal padding because
-   .container no longer does (the scroller needs to extend edge-to-edge). */
+/* Section labels inside the LayoutPicker need their own horizontal padding
+   because .container uses vertical-only padding (the scroller needs to
+   extend edge-to-edge). */
+.labelRow {
+  padding: 0 var(--space-lg);
+}
+
+/* Orientation toggle — neutral segmented control. Sits above the layout card
+   scroller. Gray track with a white sliding pill replaces the old red-border
+   pill which competed with the CTA for visual dominance. */
 .orientationWrap {
   display: flex;
-  justify-content: center;
-  margin-top: var(--space-md);
+  justify-content: flex-start;
   margin-bottom: var(--space-xl);
   padding: 0 var(--space-lg);
 }
@@ -115,29 +120,29 @@
 .orientationToggle {
   position: relative;
   display: inline-flex;
-  border: 1px solid var(--color-accent);
-  border-radius: 20px;
-  /* Clip the sliding indicator to the rounded border. `isolation: isolate`
-     creates a new stacking context so the indicator's z-index stays scoped
-     to this toggle and can't accidentally sit under unrelated siblings. */
+  background: var(--color-surface-thumbnail);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 3px;
   overflow: hidden;
   isolation: isolate;
 }
 
-/* Sliding red pill. Both `transform` (x-offset) and `width` are set inline
+/* Sliding white pill. Both `transform` (x-offset) and `width` are set inline
    from React after measuring the active button's offsetLeft/offsetWidth —
-   that way the pill grows/shrinks to exactly fit whichever label is active
-   ("Horizontal" is notably wider than "Vertical"). Inset by -1px top/bottom
-   so the pill covers the toggle's border line inside the clipping region
-   and reads as a single solid shape. */
+   that way the pill grows/shrinks to exactly fit whichever label is active.
+   The 3px padding on .orientationToggle pushes the buttons inward, and
+   offsetLeft measurements automatically account for that shift, so the
+   indicator lines up without any manual offset correction. */
 .orientationIndicator {
   position: absolute;
-  top: -1px;
-  bottom: -1px;
+  top: 3px;
+  bottom: 3px;
   left: 0;
   width: 0;
-  background: var(--color-accent);
-  border-radius: 20px;
+  background: var(--color-white);
+  border-radius: 7px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
               width 300ms cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 0;
@@ -147,21 +152,18 @@
 .orientationButton {
   position: relative;
   z-index: 1;
-  padding: 8px 20px;
+  padding: 8px 16px;
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 500;
   font-family: inherit;
   border: none;
   background: transparent;
-  color: var(--color-accent);
+  color: var(--color-text-secondary);
   cursor: pointer;
-  /* Only tween `color` here — the fill is handled by the sliding indicator,
-     so no background transition to sync. Duration matches the indicator so
-     the label flip lands on the same frame as the pill arrival. */
   transition: color 300ms cubic-bezier(0.4, 0, 0.2, 1);
   -webkit-tap-highlight-color: transparent;
 }
 
 .orientationButton.active {
-  color: var(--color-white);
+  color: var(--color-text-primary);
 }
