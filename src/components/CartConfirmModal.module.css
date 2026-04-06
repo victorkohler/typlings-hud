@@ -1,0 +1,199 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: var(--space-xl);
+  animation: fadeIn var(--duration-normal) ease;
+}
+
+.modal {
+  background: var(--color-white);
+  border-radius: var(--radius-md);
+  padding: var(--space-xl);
+  width: 100%;
+  max-width: 320px;
+  animation: slideUp var(--duration-slow) var(--ease-panel);
+}
+
+/* Poster preview wrapper — positions the expand button relative to the frame */
+.previewWrap {
+  position: relative;
+}
+
+.previewFrame {
+  aspect-ratio: 3 / 4;
+  background: var(--color-bg-warm);
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl);
+  overflow: hidden;
+}
+
+.previewFrameFullscreen {
+  border-radius: 0;
+  width: 80vw;
+  max-width: 400px;
+}
+
+.previewText {
+  font-family: 'Helvetica Neue', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--color-text-primary);
+  text-align: center;
+  word-break: break-word;
+  white-space: pre-wrap;
+  line-height: 1.2;
+}
+
+.vertical {
+  transform: rotate(-90deg);
+  transform-origin: center center;
+}
+
+.circular {
+  border: 2px solid var(--color-text-primary);
+  border-radius: 50%;
+  aspect-ratio: 1 / 1;
+  width: 70%;
+  padding: var(--space-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Expand / fullscreen trigger */
+.expandBtn {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Price breakdown */
+.priceBreakdown {
+  margin-top: var(--space-lg);
+  margin-bottom: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.priceRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.priceTotal {
+  margin-top: var(--space-xs);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-border-input);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  font-size: var(--text-md);
+}
+
+/* Action buttons */
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.confirm {
+  width: 100%;
+  padding: 16px 0;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  color: var(--color-white);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cancel {
+  width: 100%;
+  padding: 16px 0;
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-text-primary);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Fullscreen viewer */
+.fullscreen {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+  animation: fadeIn var(--duration-normal) ease;
+}
+
+.fullscreenContent {
+  transform-origin: center center;
+  will-change: transform;
+  transition: none;
+}
+
+.closeFullscreen {
+  position: absolute;
+  top: var(--space-lg);
+  right: var(--space-lg);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--color-white);
+  cursor: pointer;
+  z-index: 1;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(24px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

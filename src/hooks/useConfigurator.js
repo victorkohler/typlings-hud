@@ -230,6 +230,10 @@ export function useConfigurator() {
     // Derived
     completions,
     totalPrice,
+    basePrice,
+    framePrice,
     product,
+    frame,
+    size,
   }
 }
