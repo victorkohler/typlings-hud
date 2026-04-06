@@ -46,11 +46,18 @@
   display: block;
   pointer-events: none;
   user-select: none;
-  opacity: 0.5;
-  transition: opacity var(--duration-normal) ease;
+  /* Start invisible; .loaded fades in once the image has decoded. The
+     selection opacity (0.5 / 1) is applied via .loaded so images that
+     haven't finished loading yet stay hidden rather than popping in. */
+  opacity: 0;
+  transition: opacity var(--duration-slow) ease;
 }
 
-.productCard.selected .productImage {
+.productImage.loaded {
+  opacity: 0.5;
+}
+
+.productCard.selected .productImage.loaded {
   opacity: 1;
 }
 

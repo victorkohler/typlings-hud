@@ -47,6 +47,15 @@ export function ProductSelector({
                   decoding="async"
                   loading="eager"
                   draggable="false"
+                  onLoad={(e) => {
+                    const img = e.currentTarget
+                    const reveal = () => img.classList.add(styles.loaded)
+                    if (typeof img.decode === 'function') {
+                      img.decode().then(reveal, reveal)
+                    } else {
+                      reveal()
+                    }
+                  }}
                 />
               )}
             </div>
