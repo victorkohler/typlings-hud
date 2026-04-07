@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import styles from '../../App.module.css'
 import { useConfigurator } from '../../hooks/useConfigurator'
 import { useHud } from '../../hooks/useHud'
@@ -6,14 +6,17 @@ import { PosterPreview } from '../../components/PosterPreview'
 import { HudPanel } from '../../components/HudPanel'
 import { TabBar } from '../../components/TabBar'
 import { ProductSelector } from '../../components/ProductSelector'
+import { DetailsPanel } from '../../components/DetailsPanel'
 import { TextPersonalizer } from '../../components/TextPersonalizer'
 import { LayoutPicker } from '../../components/LayoutPicker'
 import { DesignPicker } from '../../components/DesignPicker'
 import { CartButton } from '../../components/CartButton'
 import { CartConfirmModal } from '../../components/CartConfirmModal'
 
+const TABS = ['product', 'personalize', 'layout', 'design', 'details']
+
 export default function Shell() {
-  const config = useConfigurator()
+  const config = useConfigurator(useMemo(() => ({ tabs: TABS }), []))
   const hud = useHud(config.activeTab, config.setActiveTab)
   const [showCartModal, setShowCartModal] = useState(false)
 
@@ -25,6 +28,17 @@ export default function Shell() {
         selectedSize={config.selectedSize}
         selectedFrame={config.selectedFrame}
         onSelectProduct={config.selectProduct}
+        onSelectSize={config.selectSize}
+        onSelectFrame={config.selectFrame}
+        showOptions={false}
+        columns={2}
+      />
+    ),
+    details: (
+      <DetailsPanel
+        product={config.product}
+        selectedSize={config.selectedSize}
+        selectedFrame={config.selectedFrame}
         onSelectSize={config.selectSize}
         onSelectFrame={config.selectFrame}
       />

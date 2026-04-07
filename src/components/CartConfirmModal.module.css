@@ -1,3 +1,5 @@
+/* Backdrop — full-viewport overlay. For the centered popup layout the content
+   sits in the middle; for the slide-up panel it just darkens the background. */
 .backdrop {
   position: fixed;
   inset: 0;
@@ -10,6 +12,7 @@
   animation: fadeIn var(--duration-normal) ease;
 }
 
+/* ── Centered popup (default / version2) ── */
 .modal {
   background: var(--color-white);
   border-radius: var(--radius-md);
@@ -19,6 +22,65 @@
   animation: slideUp var(--duration-slow) var(--ease-panel);
 }
 
+/* ── Full-screen slide-up panel ── */
+.panelBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  animation: fadeIn var(--duration-normal) ease;
+}
+
+.panel {
+  position: fixed;
+  inset: 0;
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-white);
+  animation: panelSlideUp var(--duration-panel) var(--ease-panel);
+}
+
+.panelScroll {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: var(--space-xl);
+  padding-bottom: var(--space-md);
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.panelClose {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.panelActions {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-xl) var(--space-xl);
+  background: var(--color-white);
+  border-top: 1px solid var(--color-border-input);
+}
+
+/* ── Shared inner elements ── */
 .heading {
   font-size: var(--text-lg);
   font-weight: 500;
@@ -106,10 +168,14 @@
 /* Price breakdown */
 .priceBreakdown {
   margin-top: var(--space-lg);
-  margin-bottom: var(--space-xl);
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
+}
+
+/* In popup mode, add bottom margin before the actions inside the modal */
+.modal .priceBreakdown {
+  margin-bottom: var(--space-xl);
 }
 
 .priceRow {
@@ -211,4 +277,9 @@
 @keyframes slideUp {
   from { transform: translateY(24px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes panelSlideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
 }

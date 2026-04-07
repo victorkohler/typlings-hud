@@ -52,6 +52,17 @@ function IconDesign() {
   )
 }
 
+function IconDetails() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 34.172 34.171" fill="currentColor">
+      <path d="M27.008,0H7.166C3.215,0,0,3.214,0,7.164v19.842c0,3.95,3.215,7.165,7.166,7.165h19.842c3.949,0,7.164-3.215,7.164-7.165V7.164c0-3.95-3.215-7.164-7.164-7.164ZM32.413,27.006c0,2.981-2.425,5.406-5.406,5.406H7.166c-2.981,0-5.407-2.425-5.407-5.406V7.164C1.758,4.183,4.185,1.758,7.166,1.758h19.842c2.981,0,5.406,2.425,5.406,5.406v19.842Z"/>
+      <path d="M9.498,14.417c-1.474,0-2.669,1.195-2.669,2.669s1.195,2.669,2.669,2.669,2.669-1.195,2.669-2.669-1.195-2.669-2.669-2.669Z"/>
+      <circle cx="17.086" cy="17.085" r="2.669"/>
+      <path d="M24.673,14.417c-1.474,0-2.669,1.195-2.669,2.669s1.195,2.669,2.669,2.669,2.669-1.195,2.669-2.669-1.195-2.669-2.669-2.669Z"/>
+    </svg>
+  )
+}
+
 function CompletionBadge() {
   return (
     <span className={styles.badge}>
@@ -67,6 +78,7 @@ const TAB_CONFIG = {
   personalize: { icon: IconPersonalize, label: 'Personalize' },
   layout: { icon: IconLayout, label: 'Layout' },
   design: { icon: IconDesign, label: 'Design' },
+  details: { icon: IconDetails, label: 'Details' },
 }
 
 // Product-specific icon that replaces the generic Product tab icon once the
@@ -83,7 +95,7 @@ export function TabBar({ tabs, activeTab, onTabChange, onTabPointerDown, complet
     <nav className={styles.tabBar}>
       <div
         className={styles.indicator}
-        style={{ '--tab-index': activeIndex }}
+        style={{ '--tab-index': activeIndex, '--tab-count': tabs.length }}
       />
       {tabs.map((tabId) => {
         const config = TAB_CONFIG[tabId]

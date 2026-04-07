@@ -1,8 +1,12 @@
 import { useSyncExternalStore } from 'react'
 import DefaultShell from './variants/default/Shell'
+import Version2Shell from './variants/version2/Shell'
+import Version3Shell from './variants/version3/Shell'
 
 const VARIANTS = {
   default: DefaultShell,
+  version2: Version2Shell,
+  version3: Version3Shell,
 }
 
 // Reads ?v= from the URL. Falls back to 'default'.

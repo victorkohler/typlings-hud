@@ -2,23 +2,35 @@ import { useState, useCallback } from 'react'
 import posterThumb from '../assets/poster-thumb-001.jpg'
 import bodyThumb from '../assets/body-thumb-001.jpg'
 
+const FRAMES = [
+  { id: 'none', name: 'No Frame', price: 0 },
+  { id: 'light-oak', name: 'Light Oak', price: 300 },
+  { id: 'dark-oak', name: 'Dark Oak', price: 300 },
+  { id: 'white', name: 'White', price: 300 },
+]
+
+// Each product declares its own options. Components read `product.options`
+// to decide what to render — no feature flags like `supportsFrames`. Adding
+// a new option type (e.g. material, color) means adding it here and teaching
+// one component to render it, without touching unrelated products.
 const PRODUCTS = [
   {
     id: 'poster',
     name: 'Poster',
     thumbnail: posterThumb,
-    supportsFrames: true,
     description: 'Printed on heavyweight matte paper for a gallery-quality finish',
     sizes: [
       { label: '30x40cm', price: 399 },
       { label: '50x70cm', price: 499 },
+    ],
+    options: [
+      { type: 'frame', choices: FRAMES },
     ],
   },
   {
     id: 'baby-body',
     name: 'Baby Body',
     thumbnail: bodyThumb,
-    supportsFrames: false,
     description: '100% organic cotton, pre-washed and soft on baby skin',
     sizes: [
       { label: 'XS', price: 299 },
@@ -27,14 +39,8 @@ const PRODUCTS = [
       { label: 'L', price: 299 },
       { label: 'XL', price: 299 },
     ],
+    options: [],
   },
-]
-
-const FRAMES = [
-  { id: 'none', name: 'No Frame', price: 0 },
-  { id: 'light-oak', name: 'Light Oak', price: 300 },
-  { id: 'dark-oak', name: 'Dark Oak', price: 300 },
-  { id: 'white', name: 'White', price: 300 },
 ]
 
 const LAYOUTS = [
@@ -76,10 +82,23 @@ const PATTERNS = [
   { id: 'lilac', hex: '#E4D7EE', name: 'Lilac' },
 ]
 
-const TABS = ['product', 'personalize', 'layout', 'design']
+const DEFAULT_TABS = ['product', 'personalize', 'layout', 'design']
 
-export function useConfigurator() {
-  const [activeTab, setActiveTabRaw] = useState('product')
+// Completion rules determine when a tab's badge appears:
+//   on_leave  — marked complete when the user navigates away
+//   on_enter  — marked complete as soon as the user enters the tab
+//   on_content — driven by content (e.g. non-empty text); set/unset externally
+// Variants can override per tab via the `completionRules` option.
+const DEFAULT_COMPLETION_RULES = {
+  product: 'on_leave',
+  personalize: 'on_content',
+  layout: 'on_enter',
+  design: 'on_enter',
+  details: 'on_enter',
+}
+
+export function useConfigurator({ tabs = DEFAULT_TABS, completionRules = {} } = {}) {
+  const [activeTab, setActiveTabRaw] = useState(tabs[0])
 
   // State 1: Product selection (poster pre-selected by default).
   // Size is remembered per product: switching poster → baby-body → poster
@@ -104,36 +123,31 @@ export function useConfigurator() {
   const [selectedColor, setSelectedColor] = useState('none')
   const [selectedPattern, setSelectedPattern] = useState(null)
 
-  // Completion badges. Every tab starts at `false` — a pre-selected default
-  // (poster on Product, boxed on Layout, "no background" on Design) does NOT
-  // count as a user-driven completion. The badge only appears once the user
-  // has tapped the corresponding control themselves. Otherwise every new
-  // session would start with two fake "already done" checkmarks.
-  const [completions, setCompletions] = useState({
-    product: false,
-    personalize: false,
-    layout: false,
-    design: false,
-  })
+  // Merge default rules with any variant overrides. Every tab gets a rule.
+  const rules = { ...DEFAULT_COMPLETION_RULES, ...completionRules }
+  const getRule = (tab) => rules[tab] || 'on_leave'
+
+  // Completion badges. Every tab starts at `false`.
+  const [completions, setCompletions] = useState(() =>
+    Object.fromEntries(tabs.map((t) => [t, false]))
+  )
 
   const markComplete = useCallback((tab) => {
     setCompletions((prev) => (prev[tab] ? prev : { ...prev, [tab]: true }))
   }, [])
 
-  // Navigation wrapper. On every tab switch we mark the *previous* tab
-  // complete if it isn't Personalize — the rule is "you've navigated away =
-  // you've accepted the current state, including its defaults". Personalize
-  // is the one exception because it has no meaningful default (an empty
-  // textarea is not a completion), so it keeps its text-driven badge.
-  // Product, Layout, and Design therefore never set their badge on selection
-  // anymore; only on leave. This also covers the "user accepted the
-  // pre-selected default without touching anything" path, which was the
-  // strange case where a poster-pre-selected Product tab still read as
-  // "incomplete" forever until the user tapped the product card.
+  // on_content tabs can be toggled on/off based on external state.
+  const setCompletion = useCallback((tab, value) => {
+    setCompletions((prev) => (prev[tab] === value ? prev : { ...prev, [tab]: value }))
+  }, [])
+
+  // Navigation wrapper. Applies on_leave (outgoing tab) and on_enter
+  // (incoming tab) rules automatically on every tab switch.
   const setActiveTab = useCallback((nextTab) => {
     setActiveTabRaw((current) => {
-      if (current !== nextTab && current !== 'personalize') {
-        markComplete(current)
+      if (current !== nextTab) {
+        if (getRule(current) === 'on_leave') markComplete(current)
+        if (getRule(nextTab) === 'on_enter') markComplete(nextTab)
       }
       return nextTab
     })
@@ -155,15 +169,9 @@ export function useConfigurator() {
 
   const updateText = useCallback((value) => {
     setText(value)
-    // Personalize is the exception to the "mark-on-leave" rule — it tracks
-    // current non-empty state so clearing the field removes the badge even
-    // after the user has typed. There's no meaningful "accept the default"
-    // for a blank textarea.
-    const isComplete = value.trim().length > 0
-    setCompletions((prev) => (
-      prev.personalize === isComplete ? prev : { ...prev, personalize: isComplete }
-    ))
-  }, [])
+    // on_content: badge tracks whether the textarea has non-empty text.
+    setCompletion('personalize', value.trim().length > 0)
+  }, [setCompletion])
 
   const selectLayout = useCallback((layoutId) => {
     setSelectedLayout(layoutId)
@@ -179,28 +187,29 @@ export function useConfigurator() {
     setSelectedColor(null)
   }, [])
 
-  // Price calculation
+  // Price calculation — only include options the selected product declares.
   const product = PRODUCTS.find((p) => p.id === selectedProduct)
   const size = product?.sizes.find((s) => s.label === selectedSize)
-  const frame = FRAMES.find((f) => f.id === selectedFrame)
+  const frameOption = product?.options.find((o) => o.type === 'frame')
+  const frame = frameOption ? frameOption.choices.find((f) => f.id === selectedFrame) : null
   const basePrice = size?.price ?? 0
   const framePrice = frame?.price ?? 0
   const totalPrice = basePrice + framePrice
 
-  // Advance from State 1 to State 2
+  // Advance from the Product tab to the next tab in sequence.
   const advanceFromProduct = useCallback(() => {
     if (!selectedProduct) return
-    setActiveTab('personalize')
-  }, [selectedProduct, setActiveTab])
+    const nextIndex = tabs.indexOf('product') + 1
+    if (nextIndex < tabs.length) setActiveTab(tabs[nextIndex])
+  }, [selectedProduct, setActiveTab, tabs])
 
   return {
     // Data
     PRODUCTS,
-    FRAMES,
     LAYOUTS,
     SOLID_COLORS,
     PATTERNS,
-    TABS,
+    TABS: tabs,
 
     // Navigation
     activeTab,

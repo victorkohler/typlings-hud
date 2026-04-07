@@ -109,85 +109,158 @@ function FullscreenViewer({ children, onClose }) {
   )
 }
 
+// Shared inner content pieces used by both popup and panel layouts.
+function PreviewBlock({ text, layout, orientation, onExpand }) {
+  return (
+    <div className={styles.previewWrap}>
+      <div className={styles.previewFrame}>
+        <div
+          className={[
+            styles.previewText,
+            orientation === 'vertical' ? styles.vertical : '',
+            layout === 'circular' ? styles.circular : '',
+          ].filter(Boolean).join(' ')}
+        >
+          {text || 'YOUR TEXT'}
+        </div>
+      </div>
+      <button
+        className={styles.expandBtn}
+        onClick={onExpand}
+        aria-label="View fullscreen"
+      >
+        <ExpandIcon />
+      </button>
+    </div>
+  )
+}
+
+function PriceBlock({ productName, selectedSize, basePrice, frameName, framePrice, totalPrice }) {
+  const showFrame = frameName && frameName !== 'No Frame'
+  return (
+    <div className={styles.priceBreakdown}>
+      <div className={styles.priceRow}>
+        <span>{productName} ({selectedSize})</span>
+        <span>{basePrice}kr</span>
+      </div>
+      {showFrame && (
+        <div className={styles.priceRow}>
+          <span>Frame: {frameName}</span>
+          <span>{framePrice}kr</span>
+        </div>
+      )}
+      <div className={`${styles.priceRow} ${styles.priceTotal}`}>
+        <span>Total</span>
+        <span>{totalPrice}kr</span>
+      </div>
+    </div>
+  )
+}
+
+function ActionButtons({ onConfirm, onCancel }) {
+  return (
+    <>
+      <button className={styles.confirm} onClick={onConfirm}>
+        Add to cart
+      </button>
+      <button className={styles.cancel} onClick={onCancel}>
+        Continue editing
+      </button>
+    </>
+  )
+}
+
 export function CartConfirmModal({
   text, layout, orientation, color, pattern,
   productName, selectedSize, basePrice, frameName, framePrice, totalPrice,
+  optionsContent,
+  variant = 'popup',
   onConfirm, onCancel,
 }) {
   const [fullscreen, setFullscreen] = useState(false)
 
-  const showFrame = frameName && frameName !== 'No Frame'
+  const fullscreenOverlay = fullscreen && (
+    <FullscreenViewer onClose={() => setFullscreen(false)}>
+      <div className={`${styles.previewFrame} ${styles.previewFrameFullscreen}`}>
+        <div
+          className={[
+            styles.previewText,
+            orientation === 'vertical' ? styles.vertical : '',
+            layout === 'circular' ? styles.circular : '',
+          ].filter(Boolean).join(' ')}
+        >
+          {text || 'YOUR TEXT'}
+        </div>
+      </div>
+    </FullscreenViewer>
+  )
 
+  if (variant === 'panel') {
+    return (
+      <>
+        <div className={styles.panelBackdrop} onClick={onCancel} />
+        <div className={styles.panel}>
+          <div className={styles.panelScroll}>
+            <div className={styles.panelHeader}>
+              <h2 className={styles.heading}>Your finished design</h2>
+              <button className={styles.panelClose} onClick={onCancel} aria-label="Close">
+                <CloseIcon />
+              </button>
+            </div>
+            <p className={styles.subheading}>Take a final look so everything is correct</p>
+            <PreviewBlock
+              text={text}
+              layout={layout}
+              orientation={orientation}
+              onExpand={() => setFullscreen(true)}
+            />
+            {optionsContent}
+            <PriceBlock
+              productName={productName}
+              selectedSize={selectedSize}
+              basePrice={basePrice}
+              frameName={frameName}
+              framePrice={framePrice}
+              totalPrice={totalPrice}
+            />
+          </div>
+          <div className={styles.panelActions}>
+            <ActionButtons onConfirm={onConfirm} onCancel={onCancel} />
+          </div>
+        </div>
+        {fullscreenOverlay}
+      </>
+    )
+  }
+
+  // Default: centered popup
   return (
     <>
       <div className={styles.backdrop} onClick={onCancel}>
         <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
           <h2 className={styles.heading}>Your finished design</h2>
           <p className={styles.subheading}>Take a final look so everything is correct</p>
-          <div className={styles.previewWrap}>
-            <div className={styles.previewFrame}>
-              <div
-                className={[
-                  styles.previewText,
-                  orientation === 'vertical' ? styles.vertical : '',
-                  layout === 'circular' ? styles.circular : '',
-                ].filter(Boolean).join(' ')}
-              >
-                {text || 'YOUR TEXT'}
-              </div>
-            </div>
-            <button
-              className={styles.expandBtn}
-              onClick={() => setFullscreen(true)}
-              aria-label="View fullscreen"
-            >
-              <ExpandIcon />
-            </button>
-          </div>
-
-          <div className={styles.priceBreakdown}>
-            <div className={styles.priceRow}>
-              <span>{productName} ({selectedSize})</span>
-              <span>{basePrice}kr</span>
-            </div>
-            {showFrame && (
-              <div className={styles.priceRow}>
-                <span>Frame: {frameName}</span>
-                <span>{framePrice}kr</span>
-              </div>
-            )}
-            <div className={`${styles.priceRow} ${styles.priceTotal}`}>
-              <span>Total</span>
-              <span>{totalPrice}kr</span>
-            </div>
-          </div>
-
+          <PreviewBlock
+            text={text}
+            layout={layout}
+            orientation={orientation}
+            onExpand={() => setFullscreen(true)}
+          />
+          {optionsContent}
+          <PriceBlock
+            productName={productName}
+            selectedSize={selectedSize}
+            basePrice={basePrice}
+            frameName={frameName}
+            framePrice={framePrice}
+            totalPrice={totalPrice}
+          />
           <div className={styles.actions}>
-            <button className={styles.confirm} onClick={onConfirm}>
-              Add to cart
-            </button>
-            <button className={styles.cancel} onClick={onCancel}>
-              Continue editing
-            </button>
+            <ActionButtons onConfirm={onConfirm} onCancel={onCancel} />
           </div>
         </div>
       </div>
-
-      {fullscreen && (
-        <FullscreenViewer onClose={() => setFullscreen(false)}>
-          <div className={`${styles.previewFrame} ${styles.previewFrameFullscreen}`}>
-            <div
-              className={[
-                styles.previewText,
-                orientation === 'vertical' ? styles.vertical : '',
-                layout === 'circular' ? styles.circular : '',
-              ].filter(Boolean).join(' ')}
-            >
-              {text || 'YOUR TEXT'}
-            </div>
-          </div>
-        </FullscreenViewer>
-      )}
+      {fullscreenOverlay}
     </>
   )
 }

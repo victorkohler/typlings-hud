@@ -11,6 +11,7 @@ import { LayoutPicker } from '../../components/LayoutPicker'
 import { DesignPicker } from '../../components/DesignPicker'
 import { CartButton } from '../../components/CartButton'
 import { CartConfirmModal } from '../../components/CartConfirmModal'
+import { DetailsPanel } from '../../components/DetailsPanel'
 
 export default function Shell() {
   const config = useConfigurator()
@@ -27,6 +28,8 @@ export default function Shell() {
         onSelectProduct={config.selectProduct}
         onSelectSize={config.selectSize}
         onSelectFrame={config.selectFrame}
+        showOptions={false}
+        columns={2}
       />
     ),
     personalize: (
@@ -104,6 +107,7 @@ export default function Shell() {
 
       {showCartModal && (
         <CartConfirmModal
+          variant="panel"
           text={config.text}
           layout={config.selectedLayout}
           orientation={config.orientation}
@@ -115,6 +119,16 @@ export default function Shell() {
           frameName={config.frame?.name}
           framePrice={config.framePrice}
           totalPrice={config.totalPrice}
+          optionsContent={
+            <DetailsPanel
+              product={config.product}
+              selectedSize={config.selectedSize}
+              selectedFrame={config.selectedFrame}
+              onSelectSize={config.selectSize}
+              onSelectFrame={config.selectFrame}
+              flush
+            />
+          }
           onConfirm={() => setShowCartModal(false)}
           onCancel={() => setShowCartModal(false)}
         />

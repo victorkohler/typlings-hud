@@ -13,16 +13,18 @@ function formatDelta(delta) {
 
 export function ProductSelector({
   products,
-  frames,
   selectedProduct,
   selectedSize,
   selectedFrame,
   onSelectProduct,
   onSelectSize,
   onSelectFrame,
+  showOptions = true,
+  columns = 3,
 }) {
   const product = products.find((p) => p.id === selectedProduct)
-  const frameObj = frames.find((f) => f.id === selectedFrame)
+  const frameOption = product?.options.find((o) => o.type === 'frame')
+  const frameObj = frameOption ? frameOption.choices.find((f) => f.id === selectedFrame) : null
   const currentFramePrice = frameObj?.price ?? 0
 
   return (
@@ -31,7 +33,7 @@ export function ProductSelector({
       <h2 className={sectionStyles.sectionTitle}>Typling products</h2>
 
       {/* Product grid */}
-      <div className={styles.productGrid}>
+      <div className={styles.productGrid} style={{ '--product-columns': columns }}>
         {products.map((p) => (
           <button
             key={p.id}
@@ -64,9 +66,9 @@ export function ProductSelector({
         ))}
       </div>
 
-      <hr className={sectionStyles.divider} />
+      {showOptions && <hr className={sectionStyles.divider} />}
 
-      {product && (
+      {showOptions && product && (
         <>
           {/* Size selector */}
           <div className={sectionStyles.sectionHeader}>
@@ -91,7 +93,7 @@ export function ProductSelector({
             {product.description}
           </p>
 
-          {product.supportsFrames && (
+          {frameOption && (
             <>
               <hr className={sectionStyles.divider} />
 
@@ -101,7 +103,7 @@ export function ProductSelector({
                 <button className={sectionStyles.sectionLink}>Our frames</button>
               </div>
               <div className={styles.frameRow}>
-                {frames.map((frame) => {
+                {frameOption.choices.map((frame) => {
                   const delta = frame.price - currentFramePrice
                   return (
                     <button

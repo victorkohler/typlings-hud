@@ -1,0 +1,107 @@
+.container {
+  padding: var(--space-lg);
+}
+
+.containerFlush {
+  padding: var(--space-lg) 0;
+}
+
+.sizeList {
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-sm);
+}
+
+.sizeListGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.sizePill {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-input);
+  background: var(--color-white);
+  cursor: pointer;
+  font-size: var(--text-md);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  transition: border-color var(--duration-normal) ease,
+              background var(--duration-normal) ease,
+              color var(--duration-normal) ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sizePill.selected {
+  border-color: var(--color-accent);
+  background: var(--color-surface-card-selected);
+  color: var(--color-accent);
+}
+
+.sizePrice {
+  font-weight: 500;
+  color: inherit;
+}
+
+.descriptionText {
+  margin-top: 10px;
+  font-size: var(--text-sm);
+  font-style: italic;
+  color: var(--color-text-secondary);
+}
+
+.frameRow {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.frameCard {
+  display: block;
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  flex: 1 1 0;
+  min-width: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.frameThumbnail {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: var(--color-surface-thumbnail);
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  transition: background var(--duration-normal) ease,
+              border-color var(--duration-normal) ease;
+}
+
+.frameCard.selected .frameThumbnail {
+  background: var(--color-surface-card-selected);
+  border-color: var(--color-accent);
+}
+
+.frameName {
+  font-size: var(--text-sm);
+  font-weight: 400;
+  color: #000000;
+  padding-top: 6px;
+  transition: color var(--duration-normal) ease;
+}
+
+.frameCard.selected .frameName {
+  color: var(--color-accent);
+}
+
+.framePriceDelta {
+  font-size: var(--text-sm);
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  padding-top: 2px;
+}

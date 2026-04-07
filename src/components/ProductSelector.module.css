@@ -8,7 +8,7 @@
 /* Product grid — 3 columns, reserves a slot for a future third product */
 .productGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: repeat(var(--product-columns, 3), 1fr);
   gap: var(--space-md);
 }
 
