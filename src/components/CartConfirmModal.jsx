@@ -110,10 +110,10 @@ function FullscreenViewer({ children, onClose }) {
 }
 
 // Shared inner content pieces used by both popup and panel layouts.
-function PreviewBlock({ text, layout, orientation, onExpand }) {
+function PreviewBlock({ text, layout, orientation, onExpand, compact }) {
   return (
-    <div className={styles.previewWrap}>
-      <div className={styles.previewFrame}>
+    <div className={`${styles.previewWrap} ${compact ? styles.previewWrapCompact : ''}`}>
+      <div className={`${styles.previewFrame} ${compact ? styles.previewCompact : ''}`}>
         <div
           className={[
             styles.previewText,
@@ -178,6 +178,19 @@ export function CartConfirmModal({
   onConfirm, onCancel,
 }) {
   const [fullscreen, setFullscreen] = useState(false)
+  const scrollRef = useRef(null)
+  const prevSizeRef = useRef(selectedSize)
+  const prevFrameRef = useRef(frameName)
+
+  // Scroll to bottom when size or frame changes in panel mode.
+  if (variant === 'panel' && (prevSizeRef.current !== selectedSize || prevFrameRef.current !== frameName)) {
+    prevSizeRef.current = selectedSize
+    prevFrameRef.current = frameName
+    requestAnimationFrame(() => {
+      const el = scrollRef.current
+      if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+    })
+  }
 
   const fullscreenOverlay = fullscreen && (
     <FullscreenViewer onClose={() => setFullscreen(false)}>
@@ -200,7 +213,7 @@ export function CartConfirmModal({
       <>
         <div className={styles.panelBackdrop} onClick={onCancel} />
         <div className={styles.panel}>
-          <div className={styles.panelScroll}>
+          <div className={styles.panelScroll} ref={scrollRef}>
             <div className={styles.panelHeader}>
               <h2 className={styles.heading}>Your finished design</h2>
               <button className={styles.panelClose} onClick={onCancel} aria-label="Close">
@@ -213,6 +226,7 @@ export function CartConfirmModal({
               layout={layout}
               orientation={orientation}
               onExpand={() => setFullscreen(true)}
+              compact
             />
             {optionsContent}
             <PriceBlock

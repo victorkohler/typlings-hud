@@ -101,6 +101,11 @@
   position: relative;
 }
 
+.previewWrapCompact {
+  width: fit-content;
+  margin: 0 auto;
+}
+
 .previewFrame {
   aspect-ratio: 3 / 4;
   background: var(--color-bg-warm);
@@ -110,6 +115,11 @@
   justify-content: center;
   padding: var(--space-xl);
   overflow: hidden;
+}
+
+.previewCompact {
+  aspect-ratio: 5 / 7;
+  max-height: 35vh;
 }
 
 .previewFrameFullscreen {
