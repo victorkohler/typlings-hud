@@ -103,7 +103,7 @@
 
 .previewWrapCompact {
   width: fit-content;
-  margin: 0 auto;
+  /*margin: 0 auto;*/
 }
 
 .previewFrame {
