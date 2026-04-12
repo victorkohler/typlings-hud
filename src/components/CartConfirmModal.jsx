@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback } from 'react'
+import { useRef, useState, useEffect } from 'react'
 
 // Inline SVG icons — no icon library per dependency policy.
 function ExpandIcon() {
@@ -22,75 +22,98 @@ function CloseIcon() {
 }
 
 // Fullscreen poster viewer with pinch-to-zoom and drag-to-pan.
+// Touch events are attached as native listeners (not React synthetic) so we can
+// guarantee `{ passive: false }` on touchmove — required for `preventDefault()`
+// to reliably block page scroll during pinch/pan across all mobile browsers
+// (Samsung Internet, UC Browser, in-app WebViews). Mirrors the pattern used by
+// HudPanel's swipe-to-dismiss gesture.
 function FullscreenViewer({ children, onClose }) {
   const [scale, setScale] = useState(1)
   const [translate, setTranslate] = useState({ x: 0, y: 0 })
-  const lastTouchRef = useRef(null)
-  const lastDistRef = useRef(null)
+  const containerRef = useRef(null)
   const contentRef = useRef(null)
 
-  const getTouchDist = (touches) => {
-    const dx = touches[0].clientX - touches[1].clientX
-    const dy = touches[0].clientY - touches[1].clientY
-    return Math.hypot(dx, dy)
-  }
+  // Mirrors for native handlers — refs stay current without re-attaching listeners.
+  const scaleRef = useRef(1)
+  scaleRef.current = scale
 
-  const handleTouchStart = useCallback((e) => {
-    if (e.touches.length === 2) {
-      lastDistRef.current = getTouchDist(e.touches)
-      lastTouchRef.current = null
-    } else if (e.touches.length === 1) {
-      lastTouchRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+
+    let lastDist = null
+    let lastTouch = null
+    let lastTapTime = 0
+
+    const getTouchDist = (touches) => {
+      const dx = touches[0].clientX - touches[1].clientX
+      const dy = touches[0].clientY - touches[1].clientY
+      return Math.hypot(dx, dy)
     }
-  }, [])
 
-  const handleTouchMove = useCallback((e) => {
-    e.preventDefault()
-    if (e.touches.length === 2) {
-      const dist = getTouchDist(e.touches)
-      if (lastDistRef.current !== null) {
-        const delta = dist / lastDistRef.current
-        setScale((s) => Math.min(Math.max(s * delta, 1), 5))
-      }
-      lastDistRef.current = dist
-      lastTouchRef.current = null
-    } else if (e.touches.length === 1 && lastTouchRef.current && scale > 1) {
-      const dx = e.touches[0].clientX - lastTouchRef.current.x
-      const dy = e.touches[0].clientY - lastTouchRef.current.y
-      setTranslate((t) => ({ x: t.x + dx, y: t.y + dy }))
-      lastTouchRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
-    }
-  }, [scale])
-
-  const handleTouchEnd = useCallback(() => {
-    lastDistRef.current = null
-    lastTouchRef.current = null
-  }, [])
-
-  // Double-tap to toggle zoom
-  const lastTapRef = useRef(0)
-  const handleTap = useCallback((e) => {
-    // Don't intercept close button taps
-    if (e.target.closest('button')) return
-    const now = Date.now()
-    if (now - lastTapRef.current < 300) {
-      if (scale > 1) {
-        setScale(1)
-        setTranslate({ x: 0, y: 0 })
-      } else {
-        setScale(2.5)
+    const handleTouchStart = (e) => {
+      if (e.touches.length === 2) {
+        lastDist = getTouchDist(e.touches)
+        lastTouch = null
+      } else if (e.touches.length === 1) {
+        lastTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY }
       }
     }
-    lastTapRef.current = now
-  }, [scale])
+
+    const handleTouchMove = (e) => {
+      e.preventDefault()
+      if (e.touches.length === 2) {
+        const dist = getTouchDist(e.touches)
+        if (lastDist !== null) {
+          const delta = dist / lastDist
+          setScale((s) => Math.min(Math.max(s * delta, 1), 5))
+        }
+        lastDist = dist
+        lastTouch = null
+      } else if (e.touches.length === 1 && lastTouch && scaleRef.current > 1) {
+        const dx = e.touches[0].clientX - lastTouch.x
+        const dy = e.touches[0].clientY - lastTouch.y
+        setTranslate((t) => ({ x: t.x + dx, y: t.y + dy }))
+        lastTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+      }
+    }
+
+    const handleTouchEnd = () => {
+      lastDist = null
+      lastTouch = null
+    }
+
+    const handleClick = (e) => {
+      if (e.target.closest('button')) return
+      const now = Date.now()
+      if (now - lastTapTime < 300) {
+        if (scaleRef.current > 1) {
+          setScale(1)
+          setTranslate({ x: 0, y: 0 })
+        } else {
+          setScale(2.5)
+        }
+      }
+      lastTapTime = now
+    }
+
+    el.addEventListener('touchstart', handleTouchStart, { passive: true })
+    el.addEventListener('touchmove', handleTouchMove, { passive: false })
+    el.addEventListener('touchend', handleTouchEnd, { passive: true })
+    el.addEventListener('click', handleClick)
+
+    return () => {
+      el.removeEventListener('touchstart', handleTouchStart)
+      el.removeEventListener('touchmove', handleTouchMove)
+      el.removeEventListener('touchend', handleTouchEnd)
+      el.removeEventListener('click', handleClick)
+    }
+  }, [])
 
   return (
     <div
+      ref={containerRef}
       className="fixed inset-0 bg-black/[.92] z-[200] flex items-center justify-center touch-none animate-[fadeIn_var(--duration-normal)_ease]"
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      onClick={handleTap}
     >
       <button
         className="absolute top-(--spacing-lg) right-(--spacing-lg) w-10 h-10 flex items-center justify-center border-none rounded-full bg-white/[.15] text-(--color-white) cursor-pointer z-[1] [-webkit-tap-highlight-color:transparent]"
@@ -256,7 +279,10 @@ export function CartConfirmModal({
               totalPrice={totalPrice}
             />
           </div>
-          <div className="shrink-0 flex flex-col gap-(--spacing-sm) p-(--spacing-md) px-(--spacing-xl) pb-(--spacing-xl) bg-(--color-white) border-t border-(--color-border-input)">
+          <div
+            className="shrink-0 flex flex-col gap-(--spacing-sm) p-(--spacing-md) px-(--spacing-xl) bg-(--color-white) border-t border-(--color-border-input)"
+            style={{ paddingBottom: 'max(var(--spacing-xl), env(safe-area-inset-bottom, var(--spacing-xl)))' }}
+          >
             <ActionButtons onConfirm={onConfirm} onCancel={onCancel} />
           </div>
         </div>
