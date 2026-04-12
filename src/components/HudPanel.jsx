@@ -4,9 +4,8 @@ import styles from './HudPanel.module.css'
 // Swipe-to-dismiss thresholds — tuned for iOS-like feel.
 const SWIPE_DISTANCE_THRESHOLD = 80  // px — dismiss on a slow drag past this
 const SWIPE_VELOCITY_THRESHOLD = 0.4 // px/ms — dismiss on a fast flick
-const DISMISS_MS = 200               // slide-out animation
+const DISMISS_MS = 200               // remaining-collapse animation
 const SNAPBACK_MS = 300              // spring-back animation
-const DAMPING = 0.4                  // resistance when over-swiping upward
 
 export function HudPanel({ header, children, onDismiss }) {
   const panelRef = useRef(null)
@@ -15,13 +14,10 @@ export function HudPanel({ header, children, onDismiss }) {
   const scrollRef = useRef(null)
   const [measuredHeight, setMeasuredHeight] = useState(null)
 
-  // Stable reference to the latest onDismiss so the touch handler effect
-  // doesn't re-attach listeners on every render.
+  // Stable reference so the touch handler effect doesn't re-attach on every render.
   const onDismissRef = useRef(onDismiss)
   onDismissRef.current = onDismiss
 
-  // Measure the natural panel height (header + content) so the panel sizes
-  // itself to fit its current tab exactly.
   useLayoutEffect(() => {
     const headerH = headerRef.current?.offsetHeight ?? 0
     const contentH = contentInnerRef.current?.offsetHeight ?? 0
@@ -29,19 +25,24 @@ export function HudPanel({ header, children, onDismiss }) {
   }, [children, header])
 
   // ── Swipe-to-dismiss gesture ──
+  // Instead of translating the whole panel (which moves the tab bar off-screen),
+  // we shrink the panel height. With flex-end layout the bottom stays anchored:
+  // the content clips away from the bottom and the tab bar slides toward its
+  // natural collapsed position — matching the existing tap-to-collapse animation.
   useEffect(() => {
     const panel = panelRef.current
     if (!panel) return
 
-    // All gesture state in a single ref — zero React renders during the drag.
-    let active = false     // in swipe mode
-    let decided = false    // swipe vs scroll decided for this touch
-    let animating = false  // dismiss/snapback transition in progress
+    let active = false
+    let decided = false
+    let animating = false
     let startY = 0
     let prevY = 0
     let prevTime = 0
     let currentY = 0
     let currentTime = 0
+    let fullHeight = 0
+    let minHeight = 0 // header-only
 
     const handleTouchStart = (e) => {
       if (animating) return
@@ -53,6 +54,8 @@ export function HudPanel({ header, children, onDismiss }) {
       currentTime = Date.now()
       active = false
       decided = false
+      fullHeight = panel.offsetHeight
+      minHeight = headerRef.current?.offsetHeight ?? 0
     }
 
     const handleTouchMove = (e) => {
@@ -60,13 +63,14 @@ export function HudPanel({ header, children, onDismiss }) {
       const t = e.touches[0]
       const deltaY = t.clientY - startY
 
-      // First significant movement decides: swipe or scroll?
+      // First significant movement decides: swipe-dismiss or scroll.
       if (!decided && Math.abs(deltaY) > 8) {
         const scrollTop = scrollRef.current?.scrollTop ?? 0
-        const hasContent = (contentInnerRef.current?.offsetHeight ?? 0) > 0
-        if (hasContent && scrollTop <= 0 && deltaY > 0) {
+        const contentH = (contentInnerRef.current?.offsetHeight ?? 0)
+        if (contentH > 0 && scrollTop <= 0 && deltaY > 0) {
           active = true
-          panel.style.willChange = 'transform'
+          // Disable the CSS height transition so the panel tracks the finger.
+          panel.style.transition = 'none'
         } else {
           active = false
         }
@@ -74,20 +78,16 @@ export function HudPanel({ header, children, onDismiss }) {
       }
 
       if (!active) return
-
-      // Prevent native scroll while we own the gesture.
       e.preventDefault()
 
-      // Track velocity via prev/current pairs.
       prevY = currentY
       prevTime = currentTime
       currentY = t.clientY
       currentTime = Date.now()
 
-      // Allow downward drag freely. Upward past start gets rubber-band damping.
-      const raw = t.clientY - startY
-      const translateY = raw > 0 ? raw : raw * DAMPING
-      panel.style.transform = `translateY(${translateY}px)`
+      const maxDelta = fullHeight - minHeight
+      const clampedDelta = Math.max(0, Math.min(deltaY, maxDelta))
+      panel.style.height = (fullHeight - clampedDelta) + 'px'
     }
 
     const handleTouchEnd = () => {
@@ -98,7 +98,7 @@ export function HudPanel({ header, children, onDismiss }) {
 
       const deltaY = currentY - startY
       const dt = (currentTime - prevTime) || 1
-      const velocity = (currentY - prevY) / dt // px/ms, positive = downward
+      const velocity = (currentY - prevY) / dt
 
       const shouldDismiss =
         deltaY > SWIPE_DISTANCE_THRESHOLD || velocity > SWIPE_VELOCITY_THRESHOLD
@@ -106,50 +106,52 @@ export function HudPanel({ header, children, onDismiss }) {
       animating = true
 
       if (shouldDismiss) {
-        // ── Dismiss: slide the panel out of view, then collapse ──
-        const panelH = panel.offsetHeight
-        panel.style.transition = `transform ${DISMISS_MS}ms cubic-bezier(0.2, 0, 0, 1)`
-        panel.style.transform = `translateY(${panelH}px)`
+        // Animate the remaining collapse from current drag height → header-only.
+        // Scale duration proportionally to the remaining distance so a near-
+        // complete swipe finishes quickly.
+        const remaining = (fullHeight - deltaY) - minHeight
+        const contentH = fullHeight - minHeight
+        const duration = Math.max(80, Math.round(DISMISS_MS * (remaining / (contentH || 1))))
+
+        panel.style.transition = `height ${duration}ms cubic-bezier(0.2, 0, 0, 1)`
+        panel.style.height = minHeight + 'px'
 
         let done = false
-        const cleanup = () => {
+        const cleanup = (e) => {
+          if (e && e.propertyName !== 'height') return
           if (done) return
           done = true
 
-          // Hide panel so the reset + React re-render doesn't flash.
-          panel.style.visibility = 'hidden'
+          // Disable transition so React's re-render (which sets height to
+          // headerH via measuredHeight) doesn't trigger a second animation.
           panel.style.transition = 'none'
-          panel.style.transform = ''
-          panel.style.willChange = ''
-
+          panel.style.height = ''
           onDismissRef.current?.()
 
-          // Restore visibility after React has painted the collapsed state.
+          // Restore the CSS transition after React has painted the collapsed
+          // state — double-rAF guarantees the layout pass has completed.
           requestAnimationFrame(() => {
             requestAnimationFrame(() => {
-              panel.style.visibility = ''
               panel.style.transition = ''
               animating = false
-              active = false
-              decided = false
             })
           })
         }
 
         panel.addEventListener('transitionend', cleanup, { once: true })
-        setTimeout(cleanup, DISMISS_MS + 50) // safety fallback
+        setTimeout(cleanup, duration + 50)
       } else {
-        // ── Snap back: spring to original position ──
-        panel.style.transition = `transform ${SNAPBACK_MS}ms cubic-bezier(0.2, 0.8, 0.2, 1)`
-        panel.style.transform = 'translateY(0)'
+        // Snap back to full height — CSS transition handles the spring.
+        panel.style.transition = `height ${SNAPBACK_MS}ms cubic-bezier(0.2, 0.8, 0.2, 1)`
+        panel.style.height = fullHeight + 'px'
 
         let done = false
-        const cleanup = () => {
+        const cleanup = (e) => {
+          if (e && e.propertyName !== 'height') return
           if (done) return
           done = true
           panel.style.transition = ''
-          panel.style.transform = ''
-          panel.style.willChange = ''
+          panel.style.height = ''
           animating = false
           active = false
           decided = false
@@ -158,6 +160,9 @@ export function HudPanel({ header, children, onDismiss }) {
         panel.addEventListener('transitionend', cleanup, { once: true })
         setTimeout(cleanup, SNAPBACK_MS + 50)
       }
+
+      active = false
+      decided = false
     }
 
     panel.addEventListener('touchstart', handleTouchStart, { passive: true })
@@ -169,7 +174,7 @@ export function HudPanel({ header, children, onDismiss }) {
       panel.removeEventListener('touchmove', handleTouchMove)
       panel.removeEventListener('touchend', handleTouchEnd)
     }
-  }, []) // stable — onDismissRef keeps the callback fresh
+  }, [])
 
   const height = measuredHeight != null ? `${measuredHeight}px` : 'auto'
 
