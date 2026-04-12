@@ -214,17 +214,26 @@ export function CartConfirmModal({
   const [fullscreen, setFullscreen] = useState(false)
   const scrollRef = useRef(null)
 
-  // Scroll to bottom when size or frame changes in panel mode so the updated
-  // price breakdown is visible. useEffect (not render-time rAF) avoids double-
-  // firing under StrictMode and keeps side-effects out of the render phase.
-  // Skips the initial mount via the `mounted` guard so the panel doesn't
-  // auto-scroll to the bottom on open.
+  // Scroll to reveal the price breakdown when size or frame changes in panel
+  // mode. useEffect (not render-time rAF) avoids double-firing under
+  // StrictMode. Skips the initial mount so the panel doesn't auto-scroll on
+  // open. Handles two directions:
+  //   Content grew (frame added) → smooth-scroll to bottom to reveal price.
+  //   Content shrank (frame removed) → iOS Safari doesn't auto-clamp
+  //     scrollTop when content height decreases, leaving a visible gap at the
+  //     bottom. Force an instant clamp so the gap disappears immediately.
   const mountedRef = useRef(false)
   useEffect(() => {
     if (!mountedRef.current) { mountedRef.current = true; return }
     if (variant !== 'panel') return
     const el = scrollRef.current
-    if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+    if (!el) return
+    const maxScroll = el.scrollHeight - el.clientHeight
+    if (el.scrollTop > maxScroll) {
+      el.scrollTop = Math.max(0, maxScroll)
+    } else {
+      el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+    }
   }, [selectedSize, frameName, variant])
 
   const fullscreenPreviewTextClasses = [
