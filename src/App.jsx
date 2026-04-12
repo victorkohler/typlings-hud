@@ -81,13 +81,15 @@ export default function App() {
   // PosterPreview is position:absolute inset-0 (full-viewport background layer),
   // so the remaining flex children (HUD + CTA) are stacked at the bottom via
   // justify-end — the tylko "persistent live preview + bottom-anchored HUD" model.
-  // h-[100dvh] tracks the iOS Safari URL bar collapse so the HUD + CTA stay
-  // pinned to the real viewport bottom; h-screen is the 100vh fallback for older
-  // in-app browsers (Instagram/Facebook iOS, Firefox Android < 108).
+  // `h-screen` (100vh) is the fallback for browsers without dvh support (older
+  // in-app WebViews). The inline `height: 100dvh` overrides it when supported,
+  // tracking the iOS Safari URL bar so the CTA stays above it. Inline style is
+  // needed because Tailwind v4 may generate h-screen after h-[100dvh] in the
+  // CSS, causing 100vh to win — defeating the whole point of dvh.
   return (
     <div
-      className="flex flex-col justify-end relative h-screen h-[100dvh] overflow-hidden antialiased bg-(--color-bg-warm) text-(--color-text-primary)"
-      style={{ fontFamily: "'Helvetica Neue', -apple-system, BlinkMacSystemFont, sans-serif" }}
+      className="flex flex-col justify-end relative h-screen overflow-hidden antialiased bg-(--color-bg-warm) text-(--color-text-primary)"
+      style={{ height: '100dvh', fontFamily: "'Helvetica Neue', -apple-system, BlinkMacSystemFont, sans-serif" }}
     >
       <PosterPreview
         text={config.text}
