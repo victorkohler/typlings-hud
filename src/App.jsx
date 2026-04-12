@@ -11,6 +11,7 @@ import { LayoutPicker } from './components/LayoutPicker'
 import { DesignPicker } from './components/DesignPicker'
 import { CartButton } from './components/CartButton'
 import { CartConfirmModal } from './components/CartConfirmModal'
+import { ErrorBoundary } from './components/ErrorBoundary'
 
 const TABS = ['product', 'personalize', 'layout', 'design', 'details']
 
@@ -87,74 +88,76 @@ export default function App() {
   // needed because Tailwind v4 may generate h-screen after h-[100dvh] in the
   // CSS, causing 100vh to win — defeating the whole point of dvh.
   return (
-    <div
-      className="flex flex-col justify-end relative h-screen overflow-hidden antialiased bg-(--color-bg-warm) text-(--color-text-primary)"
-      style={{ height: '100dvh', fontFamily: "'Helvetica Neue', -apple-system, BlinkMacSystemFont, sans-serif" }}
-    >
-      <PosterPreview
-        text={config.text}
-        layout={config.selectedLayout}
-        orientation={config.orientation}
-        color={config.selectedColor}
-        pattern={config.selectedPattern}
-        activeTab={config.activeTab}
-        onClick={hud.collapse}
-      />
-
-      <HudPanel
-        header={
-          <TabBar
-            tabs={config.TABS}
-            activeTab={config.activeTab}
-            onTabChange={hud.handleTabChange}
-            onTabPointerDown={hud.handleTabPointerDown}
-            completions={config.completions}
-            selectedProductId={config.selectedProduct}
-            selectedProductName={config.product?.name}
-          />
-        }
-        onDismiss={hud.collapse}
+    <ErrorBoundary>
+      <div
+        className="flex flex-col justify-end relative h-screen overflow-hidden antialiased bg-(--color-bg-warm) text-(--color-text-primary)"
+        style={{ height: '100dvh', fontFamily: "'Helvetica Neue', -apple-system, BlinkMacSystemFont, sans-serif" }}
       >
-        {hud.collapsed ? null : tabContent[config.activeTab]}
-      </HudPanel>
-
-      <CartButton
-        activeTab={config.activeTab}
-        totalPrice={config.totalPrice}
-        hasProduct={!!config.selectedProduct}
-        productName={config.product?.name}
-        productConfirmed={config.completions.product}
-        onAction={handleCtaAction}
-      />
-
-      {showCartModal && (
-        <CartConfirmModal
-          variant="panel"
+        <PosterPreview
           text={config.text}
           layout={config.selectedLayout}
           orientation={config.orientation}
           color={config.selectedColor}
           pattern={config.selectedPattern}
-          productName={config.product?.name}
-          selectedSize={config.selectedSize}
-          basePrice={config.basePrice}
-          frameName={config.frame?.name}
-          framePrice={config.framePrice}
-          totalPrice={config.totalPrice}
-          optionsContent={
-            <DetailsPanel
-              product={config.product}
-              selectedSize={config.selectedSize}
-              selectedFrame={config.selectedFrame}
-              onSelectSize={config.selectSize}
-              onSelectFrame={config.selectFrame}
-              flush
+          activeTab={config.activeTab}
+          onClick={hud.collapse}
+        />
+
+        <HudPanel
+          header={
+            <TabBar
+              tabs={config.TABS}
+              activeTab={config.activeTab}
+              onTabChange={hud.handleTabChange}
+              onTabPointerDown={hud.handleTabPointerDown}
+              completions={config.completions}
+              selectedProductId={config.selectedProduct}
+              selectedProductName={config.product?.name}
             />
           }
-          onConfirm={() => setShowCartModal(false)}
-          onCancel={() => setShowCartModal(false)}
+          onDismiss={hud.collapse}
+        >
+          {hud.collapsed ? null : tabContent[config.activeTab]}
+        </HudPanel>
+
+        <CartButton
+          activeTab={config.activeTab}
+          totalPrice={config.totalPrice}
+          hasProduct={!!config.selectedProduct}
+          productName={config.product?.name}
+          productConfirmed={config.completions.product}
+          onAction={handleCtaAction}
         />
-      )}
-    </div>
+
+        {showCartModal && (
+          <CartConfirmModal
+            variant="panel"
+            text={config.text}
+            layout={config.selectedLayout}
+            orientation={config.orientation}
+            color={config.selectedColor}
+            pattern={config.selectedPattern}
+            productName={config.product?.name}
+            selectedSize={config.selectedSize}
+            basePrice={config.basePrice}
+            frameName={config.frame?.name}
+            framePrice={config.framePrice}
+            totalPrice={config.totalPrice}
+            optionsContent={
+              <DetailsPanel
+                product={config.product}
+                selectedSize={config.selectedSize}
+                selectedFrame={config.selectedFrame}
+                onSelectSize={config.selectSize}
+                onSelectFrame={config.selectFrame}
+                flush
+              />
+            }
+            onConfirm={() => setShowCartModal(false)}
+            onCancel={() => setShowCartModal(false)}
+          />
+        )}
+      </div>
+    </ErrorBoundary>
   )
 }
