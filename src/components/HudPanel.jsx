@@ -122,10 +122,11 @@ export function HudPanel({ header, children, onDismiss }) {
           if (done) return
           done = true
 
-          // Disable transition so React's re-render (which sets height to
-          // headerH via measuredHeight) doesn't trigger a second animation.
+          // Disable transition so React's re-render doesn't trigger a
+          // second animation. Keep height at minHeight (don't clear it) —
+          // clearing would expose React's stale measuredHeight (full height)
+          // for one frame before the collapsed re-render lands.
           panel.style.transition = 'none'
-          panel.style.height = ''
           onDismissRef.current?.()
 
           // Restore the CSS transition after React has painted the collapsed
