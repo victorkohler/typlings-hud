@@ -217,23 +217,30 @@ export function CartConfirmModal({
   // Scroll to reveal the price breakdown when size or frame changes in panel
   // mode. useEffect (not render-time rAF) avoids double-firing under
   // StrictMode. Skips the initial mount so the panel doesn't auto-scroll on
-  // open. Handles two directions:
+  // open. Double-rAF ensures iOS Safari has fully recalculated scrollHeight
+  // after DOM removal (single rAF can fire before the layout pass completes).
+  // Handles two directions:
   //   Content grew (frame added) → smooth-scroll to bottom to reveal price.
   //   Content shrank (frame removed) → iOS Safari doesn't auto-clamp
-  //     scrollTop when content height decreases, leaving a visible gap at the
-  //     bottom. Force an instant clamp so the gap disappears immediately.
+  //     scrollTop, leaving a visible gap. Force an instant clamp.
   const mountedRef = useRef(false)
   useEffect(() => {
     if (!mountedRef.current) { mountedRef.current = true; return }
     if (variant !== 'panel') return
     const el = scrollRef.current
     if (!el) return
-    const maxScroll = el.scrollHeight - el.clientHeight
-    if (el.scrollTop > maxScroll) {
-      el.scrollTop = Math.max(0, maxScroll)
-    } else {
-      el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
-    }
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const maxScroll = el.scrollHeight - el.clientHeight
+        if (maxScroll <= 0) {
+          el.scrollTop = 0
+        } else if (el.scrollTop > maxScroll) {
+          el.scrollTop = maxScroll
+        } else {
+          el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+        }
+      })
+    })
   }, [selectedSize, frameName, variant])
 
   const fullscreenPreviewTextClasses = [
