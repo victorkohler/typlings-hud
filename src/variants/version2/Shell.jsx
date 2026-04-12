@@ -103,6 +103,7 @@ export default function Shell() {
             selectedProductName={config.product?.name}
           />
         }
+        onDismiss={hud.collapse}
       >
         {hud.collapsed ? null : tabContent[config.activeTab]}
       </HudPanel>
