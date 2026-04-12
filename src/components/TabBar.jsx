@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef, useCallback } from 'react'
 
 function IconProduct() {
   return (
@@ -89,14 +89,42 @@ const PRODUCT_ICON = {
 
 export function TabBar({ tabs, activeTab, onTabChange, onTabPointerDown, completions, selectedProductId, selectedProductName }) {
   const activeIndex = tabs.indexOf(activeTab)
+  const tabRefs = useRef({})
+
+  // Arrow-key navigation per WAI-ARIA Tabs pattern: Left/Right cycle through
+  // tabs, Home/End jump to first/last. Focus follows selection so the active
+  // tab is always the one in the tab order (tabIndex 0).
+  const handleKeyDown = useCallback((e) => {
+    let nextIndex = null
+    if (e.key === 'ArrowRight') {
+      nextIndex = (activeIndex + 1) % tabs.length
+    } else if (e.key === 'ArrowLeft') {
+      nextIndex = (activeIndex - 1 + tabs.length) % tabs.length
+    } else if (e.key === 'Home') {
+      nextIndex = 0
+    } else if (e.key === 'End') {
+      nextIndex = tabs.length - 1
+    }
+    if (nextIndex !== null) {
+      e.preventDefault()
+      const nextTab = tabs[nextIndex]
+      onTabChange(nextTab)
+      tabRefs.current[nextTab]?.focus()
+    }
+  }, [activeIndex, tabs, onTabChange])
 
   return (
-    <nav className="relative flex gap-[10px] px-2 py-[10px] bg-[#f2f2f2] rounded-(--radius-lg) rounded-b-none">
+    <div
+      role="tablist"
+      aria-label="Configurator steps"
+      className="relative flex gap-[10px] px-2 py-[10px] bg-[#f2f2f2] rounded-(--radius-lg) rounded-b-none"
+      onKeyDown={handleKeyDown}
+    >
       <div
         className="absolute top-1.5 bottom-1.5 bg-[#fcfcfc] rounded-[14px] pointer-events-none"
         style={{
           left: `calc(8px + ${activeIndex} * (100% - 6px) / ${tabs.length})`,
-          width: `calc((100% - 46px) / ${tabs.length})`,
+          width: `calc((100% - 56px) / ${tabs.length})`,
           transition: 'left 350ms cubic-bezier(0.4, 0, 0.2, 1)',
         }}
       />
@@ -116,6 +144,10 @@ export function TabBar({ tabs, activeTab, onTabChange, onTabPointerDown, complet
         return (
           <button
             key={tabId}
+            ref={(el) => { tabRefs.current[tabId] = el }}
+            role="tab"
+            aria-selected={isActive}
+            tabIndex={isActive ? 0 : -1}
             className={[
               'relative z-10 flex flex-col items-center gap-1 flex-[1_1_0] py-1.5 px-0 bg-transparent border-none cursor-pointer [-webkit-tap-highlight-color:transparent]',
               isActive ? 'text-(--color-accent)' : 'text-(--color-text-secondary)',
@@ -138,6 +170,6 @@ export function TabBar({ tabs, activeTab, onTabChange, onTabPointerDown, complet
           </button>
         )
       })}
-    </nav>
+    </div>
   )
 }
