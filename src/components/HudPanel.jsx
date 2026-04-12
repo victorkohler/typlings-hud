@@ -72,7 +72,10 @@ export function HudPanel({ header, children, onDismiss }) {
         if (contentH > 0 && scrollTop <= 0 && deltaY > 0) {
           active = true
           // Disable the CSS height transition so the panel tracks the finger.
+          // Hint will-change so the browser promotes the panel to its own
+          // compositing layer for the duration of the gesture.
           panel.style.transition = 'none'
+          panel.style.willChange = 'height'
         } else {
           active = false
         }
@@ -136,6 +139,7 @@ export function HudPanel({ header, children, onDismiss }) {
           requestAnimationFrame(() => {
             requestAnimationFrame(() => {
               panel.style.transition = ''
+              panel.style.willChange = ''
               animating = false
             })
           })
@@ -156,6 +160,7 @@ export function HudPanel({ header, children, onDismiss }) {
           done = true
           panel.style.transition = ''
           panel.style.height = ''
+          panel.style.willChange = ''
           animating = false
           active = false
           decided = false
@@ -194,7 +199,7 @@ export function HudPanel({ header, children, onDismiss }) {
   return (
     <div
       ref={panelRef}
-      className="bg-(--color-white) rounded-t-(--radius-lg) shadow-(--shadow-hud) overflow-hidden transition-[height] duration-(--duration-panel) ease-(--ease-panel) flex-shrink-0 flex flex-col relative"
+      className="bg-(--color-white) rounded-t-(--radius-lg) shadow-(--shadow-hud) overflow-hidden transition-[height] duration-(--duration-panel) ease-(--ease-panel) flex-shrink-0 flex flex-col relative [contain:layout_style]"
       style={{ height }}
     >
       <div ref={headerRef} className="flex-shrink-0">
