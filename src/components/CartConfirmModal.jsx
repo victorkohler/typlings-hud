@@ -214,6 +214,22 @@ export function CartConfirmModal({
   const [fullscreen, setFullscreen] = useState(false)
   const scrollRef = useRef(null)
 
+  // Lock body scroll while modal is open. iOS Safari allows touch events on
+  // fixed overlays to bleed through and scroll underlying content. Setting
+  // overflow:hidden on both html and body prevents this.
+  useEffect(() => {
+    const html = document.documentElement
+    const body = document.body
+    const prevHtml = html.style.overflow
+    const prevBody = body.style.overflow
+    html.style.overflow = 'hidden'
+    body.style.overflow = 'hidden'
+    return () => {
+      html.style.overflow = prevHtml
+      body.style.overflow = prevBody
+    }
+  }, [])
+
   // Scroll to reveal the price breakdown when size or frame changes in panel
   // mode. useEffect (not render-time rAF) avoids double-firing under
   // StrictMode. Skips the initial mount so the panel doesn't auto-scroll on
@@ -265,9 +281,9 @@ export function CartConfirmModal({
   if (variant === 'panel') {
     return (
       <>
-        <div className="fixed inset-0 bg-black/50 z-[100] animate-[fadeIn_var(--duration-normal)_ease]" onClick={onCancel} />
+        <div className="fixed inset-0 bg-black/50 z-[100] animate-[fadeIn_var(--duration-normal)_ease] touch-none" onClick={onCancel} />
         <div className="fixed inset-0 z-[101] flex flex-col bg-(--color-white) animate-[panelSlideUp_var(--duration-panel)_var(--ease-panel)]">
-          <div className="flex-1 overflow-y-auto p-(--spacing-xl) pb-(--spacing-md)" ref={scrollRef}>
+          <div className="flex-1 overflow-y-auto overscroll-contain p-(--spacing-xl) pb-(--spacing-md)" ref={scrollRef}>
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-medium text-(--color-text-primary) text-left mb-(--spacing-xs)">Your finished design</h2>
               <button
@@ -312,7 +328,7 @@ export function CartConfirmModal({
   return (
     <>
       <div
-        className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-(--spacing-xl) animate-[fadeIn_var(--duration-normal)_ease]"
+        className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-(--spacing-xl) animate-[fadeIn_var(--duration-normal)_ease] touch-none"
         onClick={onCancel}
       >
         <div
