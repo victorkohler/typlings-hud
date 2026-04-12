@@ -1,4 +1,4 @@
-import { useRef, useState, useLayoutEffect, useEffect } from 'react'
+import { useRef, useState, useEffect } from 'react'
 
 
 // Swipe-to-dismiss thresholds — tuned for iOS-like feel.
@@ -18,11 +18,27 @@ export function HudPanel({ header, children, onDismiss }) {
   const onDismissRef = useRef(onDismiss)
   onDismissRef.current = onDismiss
 
-  useLayoutEffect(() => {
-    const headerH = headerRef.current?.offsetHeight ?? 0
-    const contentH = contentInnerRef.current?.offsetHeight ?? 0
-    setMeasuredHeight(headerH + contentH)
-  }, [children, header])
+  // Measure header + content height via ResizeObserver instead of a
+  // useLayoutEffect that fired on every render (children/header are new React
+  // elements each time). The observer only fires when actual DOM dimensions
+  // change — tab switch, text entry growing content, orientation change — not
+  // on every parent re-render.
+  useEffect(() => {
+    const headerEl = headerRef.current
+    const contentEl = contentInnerRef.current
+    if (!headerEl || !contentEl) return
+
+    const update = () => {
+      setMeasuredHeight(headerEl.offsetHeight + contentEl.offsetHeight)
+    }
+
+    const ro = new ResizeObserver(update)
+    ro.observe(headerEl)
+    ro.observe(contentEl)
+    update()
+
+    return () => ro.disconnect()
+  }, [])
 
   // ── Swipe-to-dismiss gesture ──
   // Instead of translating the whole panel (which moves the tab bar off-screen),
