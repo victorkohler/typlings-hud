@@ -1,5 +1,6 @@
 import { useRef, useState, useLayoutEffect, useEffect } from 'react'
 
+
 // Swipe-to-dismiss thresholds — tuned for iOS-like feel.
 const SWIPE_DISTANCE_THRESHOLD = 80  // px — dismiss on a slow drag past this
 const SWIPE_VELOCITY_THRESHOLD = 0.4 // px/ms — dismiss on a fast flick
