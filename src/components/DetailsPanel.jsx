@@ -26,8 +26,8 @@ export function DetailsPanel({
     <div className={flush ? 'py-(--spacing-lg)' : 'p-(--spacing-lg)'}>
       {/* Size selector */}
       <div className="flex justify-between items-baseline mb-(--spacing-md)">
-        <span className="text-(--text-xs) tracking-[1px] font-light uppercase text-(--color-text-primary)">Select size</span>
-        <button className="text-(--text-xs) font-normal text-(--color-text-primary) underline bg-none border-none cursor-pointer">Size guide</button>
+        <span className="text-xs tracking-[1px] font-light uppercase text-(--color-text-primary)">Select size</span>
+        <button className="text-xs font-normal text-(--color-text-primary) underline bg-none border-none cursor-pointer">Size guide</button>
       </div>
       <div className={`${product.sizes.length > 3 ? 'grid grid-cols-3' : 'flex flex-row'} gap-(--spacing-sm)`}>
         {product.sizes.map((size) => {
@@ -39,7 +39,7 @@ export function DetailsPanel({
                 'flex-[1_1_0] min-w-0 flex justify-between items-center',
                 'px-(--spacing-lg) py-(--spacing-md)',
                 'rounded-(--radius-md) border cursor-pointer',
-                'text-(--text-md) font-medium',
+                'text-md font-medium',
                 'transition-all duration-(--duration-normal) ease',
                 '[-webkit-tap-highlight-color:transparent]',
                 isSelected
@@ -55,7 +55,7 @@ export function DetailsPanel({
         })}
       </div>
 
-      <p className="mt-[10px] text-(--text-sm) italic text-(--color-text-secondary)">
+      <p className="mt-[10px] text-sm italic text-(--color-text-secondary)">
         {product.description}
       </p>
 
@@ -64,8 +64,8 @@ export function DetailsPanel({
           <hr className="border-none h-px bg-[#E5E5E5] my-(--spacing-lg)" />
 
           <div className="flex justify-between items-baseline mb-(--spacing-md)">
-            <span className="text-(--text-xs) tracking-[1px] font-light uppercase text-(--color-text-primary)">Select Frame</span>
-            <button className="text-(--text-xs) font-normal text-(--color-text-primary) underline bg-none border-none cursor-pointer">Our frames</button>
+            <span className="text-xs tracking-[1px] font-light uppercase text-(--color-text-primary)">Select Frame</span>
+            <button className="text-xs font-normal text-(--color-text-primary) underline bg-none border-none cursor-pointer">Our frames</button>
           </div>
           <div className="flex gap-(--spacing-md)">
             {frameOption.choices.map((frame) => {
@@ -88,14 +88,14 @@ export function DetailsPanel({
                   />
                   <div
                     className={[
-                      'text-(--text-sm) font-normal pt-[6px]',
+                      'text-sm font-normal pt-[6px]',
                       'transition-[color] duration-(--duration-normal) ease',
                       isSelected ? 'text-(--color-accent)' : 'text-[#000000]',
                     ].join(' ')}
                   >
                     {frame.name}
                   </div>
-                  <div className="text-(--text-sm) font-normal text-(--color-text-secondary) pt-[2px]">
+                  <div className="text-sm font-normal text-(--color-text-secondary) pt-[2px]">
                     {formatDelta(delta)}
                   </div>
                 </button>

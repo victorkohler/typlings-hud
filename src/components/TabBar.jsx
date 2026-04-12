@@ -129,7 +129,7 @@ export function TabBar({ tabs, activeTab, onTabChange, onTabPointerDown, complet
             </span>
             <span
               className={[
-                'text-(--text-xs) font-normal tracking-[0.3px] [font-family:\'Helvetica_Neue\',-apple-system,BlinkMacSystemFont,sans-serif]',
+                'text-xs font-normal tracking-[0.3px] [font-family:\'Helvetica_Neue\',-apple-system,BlinkMacSystemFont,sans-serif]',
                 isActive ? 'text-(--color-accent)' : 'text-(--color-text-primary)',
               ].join(' ')}
             >

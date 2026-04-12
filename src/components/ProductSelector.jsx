@@ -27,7 +27,7 @@ export function ProductSelector({
   return (
     <div className="p-(--spacing-lg)">
       {/* Section title */}
-      <h2 className="text-(--text-xs) tracking-[1px] font-light uppercase text-(--color-text-primary) mb-(--spacing-lg)">
+      <h2 className="text-xs tracking-[1px] font-light uppercase text-(--color-text-primary) mb-(--spacing-lg)">
         Typling products
       </h2>
 
@@ -40,7 +40,8 @@ export function ProductSelector({
           return (
             <button
               key={p.id}
-              className="block bg-none border-none p-0 text-left cursor-pointer [-webkit-tap-highlight-color:transparent]"
+              className="group block bg-none border-none p-0 text-left cursor-pointer [-webkit-tap-highlight-color:transparent]"
+              data-selected={isSelected || undefined}
               onClick={() => onSelectProduct(p.id)}
             >
               <div
@@ -53,16 +54,13 @@ export function ProductSelector({
                   <img
                     src={p.thumbnail}
                     alt=""
-                    className="w-full h-full object-cover block pointer-events-none select-none opacity-0 transition-opacity duration-(--duration-slow) ease will-change-[opacity]"
+                    className="w-full h-full object-cover block pointer-events-none select-none opacity-0 transition-opacity duration-(--duration-slow) ease will-change-[opacity] data-[loaded]:opacity-50 group-data-[selected]:data-[loaded]:opacity-100"
                     decoding="async"
                     loading="eager"
                     draggable="false"
                     onLoad={(e) => {
                       const img = e.currentTarget
-                      const reveal = () => {
-                        img.style.opacity = isSelected ? '1' : '0.5'
-                        img.dataset.loaded = 'true'
-                      }
+                      const reveal = () => { img.dataset.loaded = 'true' }
                       if (typeof img.decode === 'function') {
                         img.decode().then(reveal, reveal)
                       } else {
@@ -74,7 +72,7 @@ export function ProductSelector({
               </div>
               <div
                 className={[
-                  'pt-(--spacing-sm) text-(--text-md) font-normal transition-[color] duration-(--duration-normal) ease',
+                  'pt-(--spacing-sm) text-md font-normal transition-[color] duration-(--duration-normal) ease',
                   isSelected ? 'text-(--color-accent)' : 'text-(--color-text-primary)',
                 ].join(' ')}
               >
@@ -93,10 +91,10 @@ export function ProductSelector({
         <>
           {/* Size selector */}
           <div className="flex justify-between items-baseline mb-(--spacing-md)">
-            <span className="text-(--text-xs) tracking-[1px] font-light uppercase text-(--color-text-primary)">
+            <span className="text-xs tracking-[1px] font-light uppercase text-(--color-text-primary)">
               Select size
             </span>
-            <button className="text-(--text-xs) font-normal text-(--color-text-primary) underline bg-none border-none cursor-pointer">
+            <button className="text-xs font-normal text-(--color-text-primary) underline bg-none border-none cursor-pointer">
               Size guide
             </button>
           </div>
@@ -113,7 +111,7 @@ export function ProductSelector({
                 <button
                   key={size.label}
                   className={[
-                    'flex-[1_1_0] min-w-0 flex justify-between items-center px-(--spacing-lg) py-(--spacing-md) rounded-(--radius-md) border cursor-pointer text-(--text-md) font-medium transition-[border-color,background,color] duration-(--duration-normal) ease [-webkit-tap-highlight-color:transparent]',
+                    'flex-[1_1_0] min-w-0 flex justify-between items-center px-(--spacing-lg) py-(--spacing-md) rounded-(--radius-md) border cursor-pointer text-md font-medium transition-[border-color,background,color] duration-(--duration-normal) ease [-webkit-tap-highlight-color:transparent]',
                     isSizeSelected
                       ? 'border-(--color-accent) bg-(--color-surface-card-selected) text-(--color-accent)'
                       : 'border-(--color-border-input) bg-(--color-white) text-(--color-text-secondary)',
@@ -128,7 +126,7 @@ export function ProductSelector({
           </div>
 
           {/* Product description (per-product, no price) */}
-          <p className="mt-[10px] text-(--text-sm) italic text-(--color-text-secondary)">
+          <p className="mt-[10px] text-sm italic text-(--color-text-secondary)">
             {product.description}
           </p>
 
@@ -138,10 +136,10 @@ export function ProductSelector({
 
               {/* Frame selector */}
               <div className="flex justify-between items-baseline mb-(--spacing-md)">
-                <span className="text-(--text-xs) tracking-[1px] font-light uppercase text-(--color-text-primary)">
+                <span className="text-xs tracking-[1px] font-light uppercase text-(--color-text-primary)">
                   Select Frame
                 </span>
-                <button className="text-(--text-xs) font-normal text-(--color-text-primary) underline bg-none border-none cursor-pointer">
+                <button className="text-xs font-normal text-(--color-text-primary) underline bg-none border-none cursor-pointer">
                   Our frames
                 </button>
               </div>
@@ -165,13 +163,13 @@ export function ProductSelector({
                       />
                       <div
                         className={[
-                          'text-(--text-sm) font-normal pt-[6px] transition-[color] duration-(--duration-normal) ease',
+                          'text-sm font-normal pt-[6px] transition-[color] duration-(--duration-normal) ease',
                           isFrameSelected ? 'text-(--color-accent)' : 'text-[#000000]',
                         ].join(' ')}
                       >
                         {frame.name}
                       </div>
-                      <div className="text-(--text-sm) font-normal text-(--color-text-secondary) pt-[2px]">
+                      <div className="text-sm font-normal text-(--color-text-secondary) pt-[2px]">
                         {formatDelta(delta)}
                       </div>
                     </button>

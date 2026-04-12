@@ -144,17 +144,17 @@ function PriceBlock({ productName, selectedSize, basePrice, frameName, framePric
   const showFrame = frameName && frameName !== 'No Frame'
   return (
     <div className={`mt-(--spacing-lg) flex flex-col gap-(--spacing-xs)${inPopup ? ' mb-(--spacing-xl)' : ''}`}>
-      <div className="flex justify-between text-(--text-sm) text-(--color-text-secondary) leading-[1.6]">
+      <div className="flex justify-between text-sm text-(--color-text-secondary) leading-[1.6]">
         <span>{productName} ({selectedSize})</span>
         <span>{basePrice}kr</span>
       </div>
       {showFrame && (
-        <div className="flex justify-between text-(--text-sm) text-(--color-text-secondary) leading-[1.6]">
+        <div className="flex justify-between text-sm text-(--color-text-secondary) leading-[1.6]">
           <span>Frame: {frameName}</span>
           <span>{framePrice}kr</span>
         </div>
       )}
-      <div className="flex justify-between text-(--text-sm) text-(--color-text-secondary) leading-[1.6] mt-(--spacing-xs) pt-(--spacing-sm) border-t border-(--color-border-input) font-semibold text-(--color-text-primary) text-(--text-md)">
+      <div className="flex justify-between text-sm text-(--color-text-secondary) leading-[1.6] mt-(--spacing-xs) pt-(--spacing-sm) border-t border-(--color-border-input) font-semibold text-(--color-text-primary) text-md">
         <span>Total</span>
         <span>{totalPrice}kr</span>
       </div>
@@ -166,13 +166,13 @@ function ActionButtons({ onConfirm, onCancel }) {
   return (
     <>
       <button
-        className="w-full py-[16px] border-none rounded-(--radius-pill) bg-(--color-accent) text-(--color-white) font-[inherit] text-(--text-sm) uppercase tracking-[1px] cursor-pointer [-webkit-tap-highlight-color:transparent]"
+        className="w-full py-[16px] border-none rounded-(--radius-pill) bg-(--color-accent) text-(--color-white) font-[inherit] text-sm uppercase tracking-[1px] cursor-pointer [-webkit-tap-highlight-color:transparent]"
         onClick={onConfirm}
       >
         Add to cart
       </button>
       <button
-        className="w-full py-[16px] border border-(--color-border-input) rounded-(--radius-pill) bg-transparent text-(--color-text-primary) font-[inherit] text-(--text-sm) uppercase tracking-[1px] cursor-pointer [-webkit-tap-highlight-color:transparent]"
+        className="w-full py-[16px] border border-(--color-border-input) rounded-(--radius-pill) bg-transparent text-(--color-text-primary) font-[inherit] text-sm uppercase tracking-[1px] cursor-pointer [-webkit-tap-highlight-color:transparent]"
         onClick={onCancel}
       >
         Continue editing
@@ -229,7 +229,7 @@ export function CartConfirmModal({
         <div className="fixed inset-0 z-[101] flex flex-col bg-(--color-white) animate-[panelSlideUp_var(--duration-panel)_var(--ease-panel)]">
           <div className="flex-1 overflow-y-auto p-(--spacing-xl) pb-(--spacing-md)" ref={scrollRef}>
             <div className="flex items-center justify-between">
-              <h2 className="text-(--text-lg) font-medium text-(--color-text-primary) text-left mb-(--spacing-xs)">Your finished design</h2>
+              <h2 className="text-lg font-medium text-(--color-text-primary) text-left mb-(--spacing-xs)">Your finished design</h2>
               <button
                 className="flex items-center justify-center w-9 h-9 shrink-0 border-none rounded-full bg-transparent text-(--color-text-secondary) cursor-pointer [-webkit-tap-highlight-color:transparent]"
                 onClick={onCancel}
@@ -238,7 +238,7 @@ export function CartConfirmModal({
                 <CloseIcon />
               </button>
             </div>
-            <p className="text-(--text-sm) text-(--color-text-secondary) text-left mb-(--spacing-lg)">Take a final look so everything is correct</p>
+            <p className="text-sm text-(--color-text-secondary) text-left mb-(--spacing-lg)">Take a final look so everything is correct</p>
             <PreviewBlock
               text={text}
               layout={layout}
@@ -276,8 +276,8 @@ export function CartConfirmModal({
           className="bg-(--color-white) rounded-(--radius-md) p-(--spacing-xl) w-full max-w-[360px] animate-[slideUp_var(--duration-slow)_var(--ease-panel)]"
           onClick={(e) => e.stopPropagation()}
         >
-          <h2 className="text-(--text-lg) font-medium text-(--color-text-primary) text-left mb-(--spacing-xs)">Your finished design</h2>
-          <p className="text-(--text-sm) text-(--color-text-secondary) text-left mb-(--spacing-lg)">Take a final look so everything is correct</p>
+          <h2 className="text-lg font-medium text-(--color-text-primary) text-left mb-(--spacing-xs)">Your finished design</h2>
+          <p className="text-sm text-(--color-text-secondary) text-left mb-(--spacing-lg)">Take a final look so everything is correct</p>
           <PreviewBlock
             text={text}
             layout={layout}

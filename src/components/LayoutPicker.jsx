@@ -159,7 +159,7 @@ export function LayoutPicker({
     <div className="py-(--spacing-lg)">
       {/* Orientation section */}
       <div className="flex justify-between items-baseline mb-(--spacing-md) px-(--spacing-lg)">
-        <span className="text-(--text-xs) tracking-[1px] font-light uppercase text-(--color-text-primary)">Orientation</span>
+        <span className="text-xs tracking-[1px] font-light uppercase text-(--color-text-primary)">Orientation</span>
       </div>
       <div className="flex justify-start mb-(--spacing-xl) px-(--spacing-lg)">
         <div
@@ -174,14 +174,14 @@ export function LayoutPicker({
           />
           <button
             ref={horizontalBtnRef}
-            className={`relative z-10 px-4 py-2 text-(--text-sm) font-medium font-[inherit] border-none bg-transparent cursor-pointer [-webkit-tap-highlight-color:transparent] [transition:color_300ms_cubic-bezier(0.4,0,0.2,1)] ${orientation === 'horizontal' ? 'text-(--color-text-primary)' : 'text-(--color-text-secondary)'}`}
+            className={`relative z-10 px-4 py-2 text-sm font-medium font-[inherit] border-none bg-transparent cursor-pointer [-webkit-tap-highlight-color:transparent] [transition:color_300ms_cubic-bezier(0.4,0,0.2,1)] ${orientation === 'horizontal' ? 'text-(--color-text-primary)' : 'text-(--color-text-secondary)'}`}
             onClick={() => onSetOrientation('horizontal')}
           >
             Horizontal
           </button>
           <button
             ref={verticalBtnRef}
-            className={`relative z-10 px-4 py-2 text-(--text-sm) font-medium font-[inherit] border-none bg-transparent cursor-pointer [-webkit-tap-highlight-color:transparent] [transition:color_300ms_cubic-bezier(0.4,0,0.2,1)] ${orientation === 'vertical' ? 'text-(--color-text-primary)' : 'text-(--color-text-secondary)'}`}
+            className={`relative z-10 px-4 py-2 text-sm font-medium font-[inherit] border-none bg-transparent cursor-pointer [-webkit-tap-highlight-color:transparent] [transition:color_300ms_cubic-bezier(0.4,0,0.2,1)] ${orientation === 'vertical' ? 'text-(--color-text-primary)' : 'text-(--color-text-secondary)'}`}
             onClick={() => onSetOrientation('vertical')}
           >
             Vertical
@@ -191,7 +191,7 @@ export function LayoutPicker({
 
       {/* Layout section */}
       <div className="flex justify-between items-baseline mb-(--spacing-md) px-(--spacing-lg)">
-        <span className="text-(--text-xs) tracking-[1px] font-light uppercase text-(--color-text-primary)">Layout</span>
+        <span className="text-xs tracking-[1px] font-light uppercase text-(--color-text-primary)">Layout</span>
       </div>
       <div
         ref={scrollerRef}
@@ -221,7 +221,7 @@ export function LayoutPicker({
                 )}
               </div>
               <div
-                className={`pt-[6px] text-(--text-sm) font-normal [transition:color_var(--duration-normal)_ease] ${isSelected ? 'text-(--color-accent)' : 'text-(--color-text-secondary)'}`}
+                className={`pt-[6px] text-sm font-normal [transition:color_var(--duration-normal)_ease] ${isSelected ? 'text-(--color-accent)' : 'text-(--color-text-secondary)'}`}
               >
                 {layout.name}
               </div>

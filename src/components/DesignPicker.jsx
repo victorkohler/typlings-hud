@@ -14,7 +14,7 @@ export function DesignPicker({
           line. It's the pre-selected default so the poster starts with no
           background fill. */}
       <div className="flex justify-between items-baseline mb-(--spacing-md)">
-        <span className="text-(--text-xs) tracking-[1px] font-light uppercase text-(--color-text-primary)">Background color</span>
+        <span className="text-xs tracking-[1px] font-light uppercase text-(--color-text-primary)">Background color</span>
       </div>
       <div className="flex flex-wrap justify-start items-center gap-x-(--spacing-md) gap-y-(--spacing-md) py-(--spacing-xs)">
         {solidColors.map((color) => {
@@ -52,7 +52,7 @@ export function DesignPicker({
 
       {/* Background pattern section */}
       <div className="flex justify-between items-baseline mb-(--spacing-md)">
-        <span className="text-(--text-xs) tracking-[1px] font-light uppercase text-(--color-text-primary)">Background pattern</span>
+        <span className="text-xs tracking-[1px] font-light uppercase text-(--color-text-primary)">Background pattern</span>
       </div>
       <div className="flex flex-wrap justify-start items-center gap-x-(--spacing-md) gap-y-(--spacing-md) py-(--spacing-xs)">
         {patterns.map((pattern) => {

@@ -21,11 +21,17 @@
   /* Shadows */
   --shadow-hud: 0 -6px 24px rgba(0, 0, 0, 0.15);
 
-  /* Font sizes */
+  /* Font sizes — line-height set to `normal` to match the original CSS which
+     never specified explicit line-heights (prevents Tailwind's auto-calculated
+     line-heights from changing vertical spacing). */
   --text-xs: 11px;
+  --text-xs--line-height: normal;
   --text-sm: 12px;
+  --text-sm--line-height: normal;
   --text-md: 14px;
+  --text-md--line-height: normal;
   --text-lg: 18px;
+  --text-lg--line-height: normal;
 
   /* Spacing */
   --spacing-xs: 4px;
@@ -48,35 +54,34 @@
   --ease-panel: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ── Global reset ── */
-*,
-*::before,
-*::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* ── Global overrides ── */
+/* Placed inside @layer base so they don't override Tailwind's utility layer.
+   Un-layered CSS beats @layer utilities in the cascade, which would make
+   `* { margin: 0; padding: 0 }` nullify every spacing utility. Tailwind v4's
+   preflight already resets margins, padding, and box-sizing, so only the
+   html/body rules are strictly needed here. */
+@layer base {
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
 
-html, body {
-  height: 100%;
-  overflow: hidden;
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
-}
+  /* Keyframe animations used by CartConfirmModal — defined in @layer base
+     because @keyframes are declarative (no cascade conflicts). */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
 
-/* ── Keyframe animations ── */
-/* Used by CartConfirmModal — these don't translate well to Tailwind utilities. */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
+  @keyframes slideUp {
+    from { transform: translateY(24px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
 
-@keyframes slideUp {
-  from { transform: translateY(24px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes panelSlideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
+  @keyframes panelSlideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
 }

@@ -15,7 +15,7 @@ export function CartButton({ activeTab, totalPrice, hasProduct, productName, pro
   return (
     <div className="p-(--spacing-md) px-(--spacing-lg) pb-(--spacing-xl) bg-(--color-white) flex-shrink-0 relative">
       <button
-        className={`w-full py-[16px] border-none rounded-(--radius-pill) font-[Helvetica_Neue,_-apple-system,_BlinkMacSystemFont,_sans-serif] text-(--text-sm) uppercase tracking-[1px] text-(--color-white) cursor-pointer transition-[background-color,opacity] duration-(--duration-slow) ease-in-out [-webkit-tap-highlight-color:transparent] active:scale-[0.98] ${bgClass} ${disabled ? 'opacity-[0.45] cursor-default pointer-events-none' : ''}`}
+        className={`w-full py-[16px] border-none rounded-(--radius-pill) font-[Helvetica_Neue,_-apple-system,_BlinkMacSystemFont,_sans-serif] text-sm uppercase tracking-[1px] text-(--color-white) cursor-pointer transition-[background-color,opacity] duration-(--duration-slow) ease-in-out [-webkit-tap-highlight-color:transparent] active:scale-[0.98] ${bgClass} ${disabled ? 'opacity-[0.45] cursor-default pointer-events-none' : ''}`}
         disabled={disabled}
         onClick={onAction}
       >

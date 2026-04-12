@@ -29,9 +29,9 @@ export function TextPersonalizer({ text, onTextChange }) {
   }
 
   return (
-    <div className="p-(--space-lg)">
+    <div className="p-(--spacing-lg)">
       <label
-        className="block italic text-(--text-sm) text-(--color-text-secondary) mb-(--space-sm)"
+        className="block italic text-sm text-(--color-text-secondary) mb-(--spacing-sm)"
         htmlFor="personalize-text"
       >
         Write a name, a quote, a song lyric or anything else
@@ -62,7 +62,7 @@ export function TextPersonalizer({ text, onTextChange }) {
           the element lets screen readers announce length changes without yanking
           focus. */}
       <div
-        className="mt-(--space-xs) text-right text-(--text-xs) text-(--color-text-secondary) tabular-nums"
+        className="mt-(--spacing-xs) text-right text-xs text-(--color-text-secondary) tabular-nums"
         aria-live="polite"
       >
         {text.length}/{MAX_TEXT_LENGTH}
