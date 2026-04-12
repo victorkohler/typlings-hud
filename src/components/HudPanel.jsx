@@ -1,5 +1,4 @@
 import { useRef, useState, useLayoutEffect, useEffect } from 'react'
-import styles from './HudPanel.module.css'
 
 // Swipe-to-dismiss thresholds — tuned for iOS-like feel.
 const SWIPE_DISTANCE_THRESHOLD = 80  // px — dismiss on a slow drag past this
@@ -179,12 +178,25 @@ export function HudPanel({ header, children, onDismiss }) {
 
   const height = measuredHeight != null ? `${measuredHeight}px` : 'auto'
 
+  // Load-bearing: `PosterPreview.container` is `position: absolute; inset: 0`
+  // — a full-viewport background layer. Under CSS 2.1 painting order,
+  // positioned elements paint in step 8 after non-positioned blocks (step 4).
+  // A static HudPanel would paint *behind* the absolute preview, and the
+  // preview's bg + image would cover HudPanel entirely. Making HudPanel
+  // `relative` puts it in step 8 alongside PosterPreview, where tree order
+  // wins — HudPanel is the later sibling so it paints on top of the preview
+  // (shadow + white body above image, rounded corner notches transparently
+  // revealing image content behind).
   return (
-    <div ref={panelRef} className={styles.panel} style={{ height }}>
-      <div ref={headerRef} className={styles.header}>
+    <div
+      ref={panelRef}
+      className="bg-(--color-white) rounded-t-(--radius-lg) shadow-(--shadow-hud) overflow-hidden transition-[height] duration-(--duration-panel) ease-(--ease-panel) flex-shrink-0 flex flex-col relative"
+      style={{ height }}
+    >
+      <div ref={headerRef} className="flex-shrink-0">
         {header}
       </div>
-      <div ref={scrollRef} className={styles.scrollArea}>
+      <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto">
         <div ref={contentInnerRef}>
           {children}
         </div>

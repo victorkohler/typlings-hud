@@ -1,5 +1,4 @@
 import { useRef, useState, useCallback } from 'react'
-import styles from './CartConfirmModal.module.css'
 
 // Inline SVG icons — no icon library per dependency policy.
 function ExpandIcon() {
@@ -87,18 +86,21 @@ function FullscreenViewer({ children, onClose }) {
 
   return (
     <div
-      className={styles.fullscreen}
+      className="fixed inset-0 bg-black/[.92] z-[200] flex items-center justify-center touch-none animate-[fadeIn_var(--duration-normal)_ease]"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       onClick={handleTap}
     >
-      <button className={styles.closeFullscreen} onClick={onClose}>
+      <button
+        className="absolute top-(--spacing-lg) right-(--spacing-lg) w-10 h-10 flex items-center justify-center border-none rounded-full bg-white/[.15] text-(--color-white) cursor-pointer z-[1] [-webkit-tap-highlight-color:transparent]"
+        onClick={onClose}
+      >
         <CloseIcon />
       </button>
       <div
         ref={contentRef}
-        className={styles.fullscreenContent}
+        className="origin-center will-change-transform transition-none"
         style={{
           transform: `translate(${translate.x}px, ${translate.y}px) scale(${scale})`,
         }}
@@ -111,21 +113,24 @@ function FullscreenViewer({ children, onClose }) {
 
 // Shared inner content pieces used by both popup and panel layouts.
 function PreviewBlock({ text, layout, orientation, onExpand, compact }) {
+  const previewTextClasses = [
+    'text-[28px] font-bold tracking-[4px] uppercase text-(--color-text-primary) text-center break-words whitespace-pre-wrap leading-[1.2]',
+    orientation === 'vertical' ? '-rotate-90 origin-center' : '',
+    layout === 'circular' ? 'border-2 border-(--color-text-primary) rounded-full aspect-square w-[70%] p-(--spacing-lg) flex items-center justify-center' : '',
+  ].filter(Boolean).join(' ')
+
   return (
-    <div className={`${styles.previewWrap} ${compact ? styles.previewWrapCompact : ''}`}>
-      <div className={`${styles.previewFrame} ${compact ? styles.previewCompact : ''}`}>
+    <div className={`relative${compact ? ' w-fit' : ''}`}>
+      <div className={`bg-(--color-bg-warm) rounded-none flex items-center justify-center p-(--spacing-xl) overflow-hidden${compact ? ' aspect-[5/7] max-h-[35vh]' : ' aspect-[3/4]'}`}>
         <div
-          className={[
-            styles.previewText,
-            orientation === 'vertical' ? styles.vertical : '',
-            layout === 'circular' ? styles.circular : '',
-          ].filter(Boolean).join(' ')}
+          className={previewTextClasses}
+          style={{ fontFamily: "'Helvetica Neue', sans-serif" }}
         >
           {text || 'YOUR TEXT'}
         </div>
       </div>
       <button
-        className={styles.expandBtn}
+        className="absolute top-(--spacing-sm) right-(--spacing-sm) w-8 h-8 flex items-center justify-center border-none rounded-(--radius-sm) bg-white/85 text-(--color-text-primary) cursor-pointer [-webkit-tap-highlight-color:transparent]"
         onClick={onExpand}
         aria-label="View fullscreen"
       >
@@ -135,21 +140,21 @@ function PreviewBlock({ text, layout, orientation, onExpand, compact }) {
   )
 }
 
-function PriceBlock({ productName, selectedSize, basePrice, frameName, framePrice, totalPrice }) {
+function PriceBlock({ productName, selectedSize, basePrice, frameName, framePrice, totalPrice, inPopup }) {
   const showFrame = frameName && frameName !== 'No Frame'
   return (
-    <div className={styles.priceBreakdown}>
-      <div className={styles.priceRow}>
+    <div className={`mt-(--spacing-lg) flex flex-col gap-(--spacing-xs)${inPopup ? ' mb-(--spacing-xl)' : ''}`}>
+      <div className="flex justify-between text-(--text-sm) text-(--color-text-secondary) leading-[1.6]">
         <span>{productName} ({selectedSize})</span>
         <span>{basePrice}kr</span>
       </div>
       {showFrame && (
-        <div className={styles.priceRow}>
+        <div className="flex justify-between text-(--text-sm) text-(--color-text-secondary) leading-[1.6]">
           <span>Frame: {frameName}</span>
           <span>{framePrice}kr</span>
         </div>
       )}
-      <div className={`${styles.priceRow} ${styles.priceTotal}`}>
+      <div className="flex justify-between text-(--text-sm) text-(--color-text-secondary) leading-[1.6] mt-(--spacing-xs) pt-(--spacing-sm) border-t border-(--color-border-input) font-semibold text-(--color-text-primary) text-(--text-md)">
         <span>Total</span>
         <span>{totalPrice}kr</span>
       </div>
@@ -160,10 +165,16 @@ function PriceBlock({ productName, selectedSize, basePrice, frameName, framePric
 function ActionButtons({ onConfirm, onCancel }) {
   return (
     <>
-      <button className={styles.confirm} onClick={onConfirm}>
+      <button
+        className="w-full py-[16px] border-none rounded-(--radius-pill) bg-(--color-accent) text-(--color-white) font-[inherit] text-(--text-sm) uppercase tracking-[1px] cursor-pointer [-webkit-tap-highlight-color:transparent]"
+        onClick={onConfirm}
+      >
         Add to cart
       </button>
-      <button className={styles.cancel} onClick={onCancel}>
+      <button
+        className="w-full py-[16px] border border-(--color-border-input) rounded-(--radius-pill) bg-transparent text-(--color-text-primary) font-[inherit] text-(--text-sm) uppercase tracking-[1px] cursor-pointer [-webkit-tap-highlight-color:transparent]"
+        onClick={onCancel}
+      >
         Continue editing
       </button>
     </>
@@ -192,15 +203,18 @@ export function CartConfirmModal({
     })
   }
 
+  const fullscreenPreviewTextClasses = [
+    'text-[28px] font-bold tracking-[4px] uppercase text-(--color-text-primary) text-center break-words whitespace-pre-wrap leading-[1.2]',
+    orientation === 'vertical' ? '-rotate-90 origin-center' : '',
+    layout === 'circular' ? 'border-2 border-(--color-text-primary) rounded-full aspect-square w-[70%] p-(--spacing-lg) flex items-center justify-center' : '',
+  ].filter(Boolean).join(' ')
+
   const fullscreenOverlay = fullscreen && (
     <FullscreenViewer onClose={() => setFullscreen(false)}>
-      <div className={`${styles.previewFrame} ${styles.previewFrameFullscreen}`}>
+      <div className="rounded-none w-[80vw] max-w-[400px] bg-(--color-bg-warm) flex items-center justify-center p-(--spacing-xl) overflow-hidden aspect-[3/4]">
         <div
-          className={[
-            styles.previewText,
-            orientation === 'vertical' ? styles.vertical : '',
-            layout === 'circular' ? styles.circular : '',
-          ].filter(Boolean).join(' ')}
+          className={fullscreenPreviewTextClasses}
+          style={{ fontFamily: "'Helvetica Neue', sans-serif" }}
         >
           {text || 'YOUR TEXT'}
         </div>
@@ -211,16 +225,20 @@ export function CartConfirmModal({
   if (variant === 'panel') {
     return (
       <>
-        <div className={styles.panelBackdrop} onClick={onCancel} />
-        <div className={styles.panel}>
-          <div className={styles.panelScroll} ref={scrollRef}>
-            <div className={styles.panelHeader}>
-              <h2 className={styles.heading}>Your finished design</h2>
-              <button className={styles.panelClose} onClick={onCancel} aria-label="Close">
+        <div className="fixed inset-0 bg-black/50 z-[100] animate-[fadeIn_var(--duration-normal)_ease]" onClick={onCancel} />
+        <div className="fixed inset-0 z-[101] flex flex-col bg-(--color-white) animate-[panelSlideUp_var(--duration-panel)_var(--ease-panel)]">
+          <div className="flex-1 overflow-y-auto p-(--spacing-xl) pb-(--spacing-md)" ref={scrollRef}>
+            <div className="flex items-center justify-between">
+              <h2 className="text-(--text-lg) font-medium text-(--color-text-primary) text-left mb-(--spacing-xs)">Your finished design</h2>
+              <button
+                className="flex items-center justify-center w-9 h-9 shrink-0 border-none rounded-full bg-transparent text-(--color-text-secondary) cursor-pointer [-webkit-tap-highlight-color:transparent]"
+                onClick={onCancel}
+                aria-label="Close"
+              >
                 <CloseIcon />
               </button>
             </div>
-            <p className={styles.subheading}>Take a final look so everything is correct</p>
+            <p className="text-(--text-sm) text-(--color-text-secondary) text-left mb-(--spacing-lg)">Take a final look so everything is correct</p>
             <PreviewBlock
               text={text}
               layout={layout}
@@ -238,7 +256,7 @@ export function CartConfirmModal({
               totalPrice={totalPrice}
             />
           </div>
-          <div className={styles.panelActions}>
+          <div className="shrink-0 flex flex-col gap-(--spacing-sm) p-(--spacing-md) px-(--spacing-xl) pb-(--spacing-xl) bg-(--color-white) border-t border-(--color-border-input)">
             <ActionButtons onConfirm={onConfirm} onCancel={onCancel} />
           </div>
         </div>
@@ -250,10 +268,16 @@ export function CartConfirmModal({
   // Default: centered popup
   return (
     <>
-      <div className={styles.backdrop} onClick={onCancel}>
-        <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-          <h2 className={styles.heading}>Your finished design</h2>
-          <p className={styles.subheading}>Take a final look so everything is correct</p>
+      <div
+        className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-(--spacing-xl) animate-[fadeIn_var(--duration-normal)_ease]"
+        onClick={onCancel}
+      >
+        <div
+          className="bg-(--color-white) rounded-(--radius-md) p-(--spacing-xl) w-full max-w-[360px] animate-[slideUp_var(--duration-slow)_var(--ease-panel)]"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <h2 className="text-(--text-lg) font-medium text-(--color-text-primary) text-left mb-(--spacing-xs)">Your finished design</h2>
+          <p className="text-(--text-sm) text-(--color-text-secondary) text-left mb-(--spacing-lg)">Take a final look so everything is correct</p>
           <PreviewBlock
             text={text}
             layout={layout}
@@ -268,8 +292,9 @@ export function CartConfirmModal({
             frameName={frameName}
             framePrice={framePrice}
             totalPrice={totalPrice}
+            inPopup
           />
-          <div className={styles.actions}>
+          <div className="flex flex-col gap-(--spacing-sm)">
             <ActionButtons onConfirm={onConfirm} onCancel={onCancel} />
           </div>
         </div>

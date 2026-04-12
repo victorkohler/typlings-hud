@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+/* ── Theme tokens ── */
+@theme {
+  /* Brand */
+  --color-accent: #e74024;
+  --color-cta-product: #2D2D2D;
+
+  /* Text */
+  --color-text-primary: #333333;
+  --color-text-secondary: #999999;
+  --color-white: #FFFFFF;
+  --color-bg-warm: #F5F0E8;
+
+  /* Surfaces */
+  --color-surface-card-selected: #FDF5F2;
+  --color-surface-thumbnail: #e4e4e4;
+  --color-border-input: #E0DCD4;
+  --color-border-swatch: #D0CCC4;
+
+  /* Shadows */
+  --shadow-hud: 0 -6px 24px rgba(0, 0, 0, 0.15);
+
+  /* Font sizes */
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-md: 14px;
+  --text-lg: 18px;
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+
+  /* Radii */
+  --radius-sm: 10px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-pill: 28px;
+
+  /* Timing */
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  --duration-panel: 400ms;
+  --ease-panel: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Global reset ── */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* ── Keyframe animations ── */
+/* Used by CartConfirmModal — these don't translate well to Tailwind utilities. */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(24px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes panelSlideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}

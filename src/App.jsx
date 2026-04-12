@@ -1,39 +1,158 @@
-import { useSyncExternalStore } from 'react'
-import DefaultShell from './variants/default/Shell'
-import Version2Shell from './variants/version2/Shell'
-import Version3Shell from './variants/version3/Shell'
-import Version4Shell from './variants/version4/Shell'
+import { useState, useMemo } from 'react'
+import { useConfigurator } from './hooks/useConfigurator'
+import { useHud } from './hooks/useHud'
+import { PosterPreview } from './components/PosterPreview'
+import { HudPanel } from './components/HudPanel'
+import { TabBar } from './components/TabBar'
+import { ProductSelector } from './components/ProductSelector'
+import { DetailsPanel } from './components/DetailsPanel'
+import { TextPersonalizer } from './components/TextPersonalizer'
+import { LayoutPicker } from './components/LayoutPicker'
+import { DesignPicker } from './components/DesignPicker'
+import { CartButton } from './components/CartButton'
+import { CartConfirmModal } from './components/CartConfirmModal'
 
-const VARIANTS = {
-  default: DefaultShell,
-  version2: Version2Shell,
-  version3: Version3Shell,
-  version4: Version4Shell,
-}
-
-// Reads ?v= from the URL. Falls back to 'default'.
-function getVariant() {
-  return new URLSearchParams(window.location.search).get('v') || 'default'
-}
-
-// Re-render when the URL changes (back/forward navigation).
-function subscribeToUrl(cb) {
-  window.addEventListener('popstate', cb)
-  return () => window.removeEventListener('popstate', cb)
-}
+const TABS = ['product', 'personalize', 'layout', 'design', 'details']
 
 export default function App() {
-  const variantKey = useSyncExternalStore(subscribeToUrl, getVariant)
-  const Shell = VARIANTS[variantKey]
+  const config = useConfigurator(useMemo(() => ({ tabs: TABS }), []))
+  const hud = useHud(config.activeTab, config.setActiveTab)
+  const [showCartModal, setShowCartModal] = useState(false)
 
-  if (!Shell) {
-    return (
-      <div style={{ padding: 40, fontFamily: 'sans-serif' }}>
-        <h2>Unknown variant: <code>{variantKey}</code></h2>
-        <p>Available: {Object.keys(VARIANTS).join(', ')}</p>
-      </div>
-    )
+  const tabContent = {
+    product: (
+      <ProductSelector
+        products={config.PRODUCTS}
+        selectedProduct={config.selectedProduct}
+        selectedSize={config.selectedSize}
+        selectedFrame={config.selectedFrame}
+        onSelectProduct={config.selectProduct}
+        onSelectSize={config.selectSize}
+        onSelectFrame={config.selectFrame}
+        showOptions={false}
+        columns={2}
+      />
+    ),
+    details: (
+      <DetailsPanel
+        product={config.product}
+        selectedSize={config.selectedSize}
+        selectedFrame={config.selectedFrame}
+        onSelectSize={config.selectSize}
+        onSelectFrame={config.selectFrame}
+      />
+    ),
+    personalize: (
+      <TextPersonalizer
+        text={config.text}
+        onTextChange={config.updateText}
+      />
+    ),
+    layout: (
+      <LayoutPicker
+        layouts={config.LAYOUTS}
+        selectedLayout={config.selectedLayout}
+        orientation={config.orientation}
+        onSelectLayout={config.selectLayout}
+        onSetOrientation={config.setOrientation}
+      />
+    ),
+    design: (
+      <DesignPicker
+        solidColors={config.SOLID_COLORS}
+        patterns={config.PATTERNS}
+        selectedColor={config.selectedColor}
+        selectedPattern={config.selectedPattern}
+        onSelectColor={config.selectColor}
+        onSelectPattern={config.selectPattern}
+      />
+    ),
   }
 
-  return <Shell />
+  const handleCtaAction = () => {
+    if (config.activeTab === 'product' && !config.completions.product) {
+      hud.setCollapsed(false)
+      config.advanceFromProduct()
+    } else {
+      setShowCartModal(true)
+    }
+  }
+
+  // PosterPreview is position:absolute inset-0 (full-viewport background layer),
+  // so the remaining flex children (HUD + CTA) are stacked at the bottom via
+  // justify-end — the tylko "persistent live preview + bottom-anchored HUD" model.
+  // h-[100dvh] tracks the iOS Safari URL bar collapse so the HUD + CTA stay
+  // pinned to the real viewport bottom; h-screen is the 100vh fallback for older
+  // in-app browsers (Instagram/Facebook iOS, Firefox Android < 108).
+  return (
+    <div
+      className="flex flex-col justify-end relative h-screen h-[100dvh] overflow-hidden antialiased bg-(--color-bg-warm) text-(--color-text-primary)"
+      style={{ fontFamily: "'Helvetica Neue', -apple-system, BlinkMacSystemFont, sans-serif" }}
+    >
+      <PosterPreview
+        text={config.text}
+        layout={config.selectedLayout}
+        orientation={config.orientation}
+        color={config.selectedColor}
+        pattern={config.selectedPattern}
+        activeTab={config.activeTab}
+        onClick={hud.collapse}
+      />
+
+      <HudPanel
+        header={
+          <TabBar
+            tabs={config.TABS}
+            activeTab={config.activeTab}
+            onTabChange={hud.handleTabChange}
+            onTabPointerDown={hud.handleTabPointerDown}
+            completions={config.completions}
+            selectedProductId={config.selectedProduct}
+            selectedProductName={config.product?.name}
+          />
+        }
+        onDismiss={hud.collapse}
+      >
+        {hud.collapsed ? null : tabContent[config.activeTab]}
+      </HudPanel>
+
+      <CartButton
+        activeTab={config.activeTab}
+        totalPrice={config.totalPrice}
+        hasProduct={!!config.selectedProduct}
+        productName={config.product?.name}
+        productConfirmed={config.completions.product}
+        onAction={handleCtaAction}
+      />
+
+      {showCartModal && (
+        <CartConfirmModal
+          variant="panel"
+          text={config.text}
+          layout={config.selectedLayout}
+          orientation={config.orientation}
+          color={config.selectedColor}
+          pattern={config.selectedPattern}
+          productName={config.product?.name}
+          selectedSize={config.selectedSize}
+          basePrice={config.basePrice}
+          frameName={config.frame?.name}
+          framePrice={config.framePrice}
+          totalPrice={config.totalPrice}
+          optionsContent={
+            <DetailsPanel
+              product={config.product}
+              selectedSize={config.selectedSize}
+              selectedFrame={config.selectedFrame}
+              onSelectSize={config.selectSize}
+              onSelectFrame={config.selectFrame}
+              flush
+            />
+          }
+          onConfirm={() => setShowCartModal(false)}
+          onCancel={() => setShowCartModal(false)}
+        />
+      )}
+    </div>
+  )
 }

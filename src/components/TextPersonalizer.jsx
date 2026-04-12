@@ -1,5 +1,3 @@
-import styles from './TextPersonalizer.module.css'
-
 // Maximum characters accepted in the poster text field. Tuned to 30 because
 // longer strings start wrapping past the content zone in the poster preview
 // regardless of layout, and one to three short words is the overwhelming
@@ -31,20 +29,42 @@ export function TextPersonalizer({ text, onTextChange }) {
   }
 
   return (
-    <div className={styles.container}>
-      <label className={styles.label} htmlFor="personalize-text">
+    <div className="p-(--space-lg)">
+      <label
+        className="block italic text-(--text-sm) text-(--color-text-secondary) mb-(--space-sm)"
+        htmlFor="personalize-text"
+      >
         Write a name, a quote, a song lyric or anything else
       </label>
       <textarea
         id="personalize-text"
-        className={styles.textarea}
+        className={[
+          'w-full block min-h-[80px] p-[14px]',
+          'border border-(--color-border-input) rounded-(--radius-md)',
+          'bg-(--color-white) text-(--color-text-primary)',
+          // 16px is the iOS Safari zoom-on-focus threshold — do not lower. Kept as a
+          // raw value (not a --text-* token) to signal it's an intentional exception
+          // to the UI chrome scale.
+          'text-[16px] font-[inherit] leading-[1.4] tracking-[1px] uppercase',
+          'resize-none',
+          'transition-colors duration-(--duration-normal) ease-[ease]',
+          '[-webkit-tap-highlight-color:transparent]',
+          'focus:outline-none focus:border-(--color-accent)',
+        ].join(' ')}
         value={text}
         onChange={handleChange}
         onFocus={handleFocus}
         maxLength={MAX_TEXT_LENGTH}
         rows={3}
       />
-      <div className={styles.counter} aria-live="polite">
+      {/* Live character counter, right-aligned under the textarea. Secondary color so
+          it reads as utility metadata, not primary content. `aria-live="polite"` on
+          the element lets screen readers announce length changes without yanking
+          focus. */}
+      <div
+        className="mt-(--space-xs) text-right text-(--text-xs) text-(--color-text-secondary) tabular-nums"
+        aria-live="polite"
+      >
         {text.length}/{MAX_TEXT_LENGTH}
       </div>
     </div>

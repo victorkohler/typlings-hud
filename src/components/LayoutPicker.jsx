@@ -1,6 +1,4 @@
 import { useLayoutEffect, useRef, useState } from 'react'
-import styles from './LayoutPicker.module.css'
-import sectionStyles from '../styles/sections.module.css'
 
 // `specs.md` State 3 — drag-to-scroll velocity multiplier
 const DRAG_VELOCITY = 1.5
@@ -11,9 +9,8 @@ const DRAG_THRESHOLD = 5
 
 // Per-layout preview icons rendered inside the card's gray thumb. Each is a
 // simple currentColor glyph (gray by default, accent when the card is
-// selected — see `.thumb` / `.card.selected .thumb` in the module CSS).
-// Kept inline rather than pulled from `design/assets/icons/` because these
-// are one-offs specific to LayoutPicker and the shapes are trivial.
+// selected). Kept inline rather than pulled from `design/assets/icons/`
+// because these are one-offs specific to LayoutPicker and the shapes are trivial.
 function IconBoxed() {
   return (
     <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -159,24 +156,32 @@ export function LayoutPicker({
   }
 
   return (
-    <div className={styles.container}>
+    <div className="py-(--spacing-lg)">
       {/* Orientation section */}
-      <div className={`${sectionStyles.sectionHeader} ${styles.labelRow}`}>
-        <span className={sectionStyles.sectionLabel}>Orientation</span>
+      <div className="flex justify-between items-baseline mb-(--spacing-md) px-(--spacing-lg)">
+        <span className="text-(--text-xs) tracking-[1px] font-light uppercase text-(--color-text-primary)">Orientation</span>
       </div>
-      <div className={styles.orientationWrap}>
-        <div className={styles.orientationToggle} role="group" aria-label="Orientation">
-          <div ref={indicatorRef} className={styles.orientationIndicator} aria-hidden="true" />
+      <div className="flex justify-start mb-(--spacing-xl) px-(--spacing-lg)">
+        <div
+          className="relative inline-flex bg-(--color-surface-thumbnail) border-none rounded-(--radius-sm) p-[3px] overflow-hidden isolate"
+          role="group"
+          aria-label="Orientation"
+        >
+          <div
+            ref={indicatorRef}
+            className="absolute top-[3px] bottom-[3px] left-0 w-0 bg-(--color-white) rounded-[7px] shadow-[0_1px_3px_rgba(0,0,0,0.08)] z-0 will-change-[transform,width] [transition:transform_300ms_cubic-bezier(0.4,0,0.2,1),width_300ms_cubic-bezier(0.4,0,0.2,1)]"
+            aria-hidden="true"
+          />
           <button
             ref={horizontalBtnRef}
-            className={`${styles.orientationButton} ${orientation === 'horizontal' ? styles.active : ''}`}
+            className={`relative z-10 px-4 py-2 text-(--text-sm) font-medium font-[inherit] border-none bg-transparent cursor-pointer [-webkit-tap-highlight-color:transparent] [transition:color_300ms_cubic-bezier(0.4,0,0.2,1)] ${orientation === 'horizontal' ? 'text-(--color-text-primary)' : 'text-(--color-text-secondary)'}`}
             onClick={() => onSetOrientation('horizontal')}
           >
             Horizontal
           </button>
           <button
             ref={verticalBtnRef}
-            className={`${styles.orientationButton} ${orientation === 'vertical' ? styles.active : ''}`}
+            className={`relative z-10 px-4 py-2 text-(--text-sm) font-medium font-[inherit] border-none bg-transparent cursor-pointer [-webkit-tap-highlight-color:transparent] [transition:color_300ms_cubic-bezier(0.4,0,0.2,1)] ${orientation === 'vertical' ? 'text-(--color-text-primary)' : 'text-(--color-text-secondary)'}`}
             onClick={() => onSetOrientation('vertical')}
           >
             Vertical
@@ -185,12 +190,12 @@ export function LayoutPicker({
       </div>
 
       {/* Layout section */}
-      <div className={`${sectionStyles.sectionHeader} ${styles.labelRow}`}>
-        <span className={sectionStyles.sectionLabel}>Layout</span>
+      <div className="flex justify-between items-baseline mb-(--spacing-md) px-(--spacing-lg)">
+        <span className="text-(--text-xs) tracking-[1px] font-light uppercase text-(--color-text-primary)">Layout</span>
       </div>
       <div
         ref={scrollerRef}
-        className={`${styles.scroller} ${isDragging ? styles.dragging : ''}`}
+        className={`flex gap-(--spacing-md) overflow-x-auto overflow-y-hidden px-(--spacing-lg) select-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={endDrag}
@@ -199,16 +204,27 @@ export function LayoutPicker({
       >
         {layouts.map((layout) => {
           const Icon = LAYOUT_ICONS[layout.id]
+          const isSelected = selectedLayout === layout.id
           return (
             <button
               key={layout.id}
-              className={`${styles.card} ${selectedLayout === layout.id ? styles.selected : ''}`}
+              className="w-[calc((100%-var(--spacing-md)*4)/4.5)] shrink-0 grow-0 flex flex-col bg-transparent border-none p-0 cursor-pointer text-left [-webkit-tap-highlight-color:transparent]"
               onClick={() => handleCardClick(layout.id)}
             >
-              <div className={styles.thumb}>
-                {Icon && <Icon />}
+              <div
+                className={`w-full aspect-square rounded-(--radius-sm) border border-transparent flex items-center justify-center [transition:background_var(--duration-normal)_ease,border-color_var(--duration-normal)_ease,color_var(--duration-normal)_ease] ${isSelected ? 'bg-(--color-surface-card-selected) border-(--color-accent) text-(--color-accent)' : 'bg-(--color-surface-thumbnail) text-(--color-text-secondary)'}`}
+              >
+                {Icon && (
+                  <span className="w-[42%] h-[42%] block [&>svg]:w-full [&>svg]:h-full [&>svg]:block">
+                    <Icon />
+                  </span>
+                )}
               </div>
-              <div className={styles.cardLabel}>{layout.name}</div>
+              <div
+                className={`pt-[6px] text-(--text-sm) font-normal [transition:color_var(--duration-normal)_ease] ${isSelected ? 'text-(--color-accent)' : 'text-(--color-text-secondary)'}`}
+              >
+                {layout.name}
+              </div>
             </button>
           )
         })}

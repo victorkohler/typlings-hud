@@ -1,5 +1,4 @@
 import React from 'react'
-import styles from './TabBar.module.css'
 
 function IconProduct() {
   return (
@@ -65,7 +64,7 @@ function IconDetails() {
 
 function CompletionBadge() {
   return (
-    <span className={styles.badge}>
+    <span className="absolute -top-0.5 -right-1.5 w-3 h-3 bg-(--color-accent) rounded-full flex items-center justify-center [box-shadow:0_0_0_1.5px_var(--color-white)]">
       <svg width="8" height="8" viewBox="0 0 8 8" fill="none">
         <path d="M1.5 4l2 2L6.5 2.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
@@ -92,10 +91,14 @@ export function TabBar({ tabs, activeTab, onTabChange, onTabPointerDown, complet
   const activeIndex = tabs.indexOf(activeTab)
 
   return (
-    <nav className={styles.tabBar}>
+    <nav className="relative flex gap-[10px] px-2 py-[10px] bg-[#f2f2f2] rounded-(--radius-lg) rounded-b-none">
       <div
-        className={styles.indicator}
-        style={{ '--tab-index': activeIndex, '--tab-count': tabs.length }}
+        className="absolute top-1.5 bottom-1.5 bg-[#fcfcfc] rounded-[14px] pointer-events-none"
+        style={{
+          left: `calc(8px + ${activeIndex} * (100% - 6px) / ${tabs.length})`,
+          width: `calc((100% - 46px) / ${tabs.length})`,
+          transition: 'left 350ms cubic-bezier(0.4, 0, 0.2, 1)',
+        }}
       />
       {tabs.map((tabId) => {
         const config = TAB_CONFIG[tabId]
@@ -113,15 +116,25 @@ export function TabBar({ tabs, activeTab, onTabChange, onTabPointerDown, complet
         return (
           <button
             key={tabId}
-            className={`${styles.tab} ${isActive ? styles.active : ''}`}
+            className={[
+              'relative z-10 flex flex-col items-center gap-1 flex-[1_1_0] py-1.5 px-0 bg-transparent border-none cursor-pointer [-webkit-tap-highlight-color:transparent]',
+              isActive ? 'text-(--color-accent)' : 'text-(--color-text-secondary)',
+            ].join(' ')}
             onPointerDown={onTabPointerDown}
             onClick={() => onTabChange(tabId)}
           >
-            <span className={styles.iconWrap}>
+            <span className="relative flex items-center justify-center w-[22px] h-[22px]">
               <Icon />
               {isComplete && <CompletionBadge />}
             </span>
-            <span className={styles.label}>{label}</span>
+            <span
+              className={[
+                'text-(--text-xs) font-normal tracking-[0.3px] [font-family:\'Helvetica_Neue\',-apple-system,BlinkMacSystemFont,sans-serif]',
+                isActive ? 'text-(--color-accent)' : 'text-(--color-text-primary)',
+              ].join(' ')}
+            >
+              {label}
+            </span>
           </button>
         )
       })}

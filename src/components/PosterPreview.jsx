@@ -1,5 +1,4 @@
 import bgPoster from '../assets/bg-poster.jpg'
-import styles from './PosterPreview.module.css'
 
 // Per-layout typography. The default (no layout selected) mirrors the
 // `pattern` entry — that matches the reference screenshots where nothing has
@@ -104,26 +103,32 @@ export function PosterPreview({ text, layout, orientation, color, pattern, activ
   const showDots = activeTab !== 'product'
 
   return (
-    <div className={styles.container} onClick={onClick}>
-      <div className={styles.stage}>
+    <div
+      className="absolute inset-0 overflow-hidden bg-(--color-bg-warm)"
+      onClick={onClick}
+    >
+      <div className="w-full aspect-[431/932] relative top-[-50px]">
         <img
           src={bgPoster}
           alt=""
-          className={styles.bgImage}
+          className="block w-full h-full object-cover select-none pointer-events-none"
           draggable={false}
           decoding="async"
           fetchpriority="high"
         />
         <div
-          className={styles.contentZone}
+          className="absolute top-[13%] left-[16%] w-[68%] h-[62%] flex items-center justify-center p-(--spacing-lg) transition-[background] duration-(--duration-normal) ease-in-out"
           style={{ background: contentZoneBackground }}
         >
           <div
             className={[
-              styles.textWrap,
-              isVertical ? styles.vertical : '',
-              isCircular ? styles.circular : '',
-              isEmpty ? styles.ghost : '',
+              'max-w-full max-h-full text-center leading-[1.2] break-words whitespace-pre-wrap',
+              'transition-[color,opacity] duration-(--duration-normal) ease-in-out',
+              isVertical ? 'rotate-[-90deg] origin-center' : '',
+              isCircular
+                ? 'border-2 border-current rounded-full aspect-square w-auto p-(--spacing-xl) flex items-center justify-center'
+                : '',
+              isEmpty ? 'opacity-25' : '',
             ].filter(Boolean).join(' ')}
             style={{
               color: TEXT_COLOR,
@@ -140,10 +145,13 @@ export function PosterPreview({ text, layout, orientation, color, pattern, activ
         </div>
       </div>
       {showDots && (
-        <div className={styles.dots} aria-hidden="true">
-          <span className={`${styles.dot} ${styles.dotActive}`} />
-          <span className={styles.dot} />
-          <span className={styles.dot} />
+        <div
+          className="absolute left-1/2 bottom-4 -translate-x-1/2 flex items-center gap-[6px] px-[10px] py-1 bg-white/85 border border-black/15 rounded-[12px] pointer-events-none"
+          aria-hidden="true"
+        >
+          <span className="w-2 h-2 rounded-full bg-white border border-black/[0.28]" />
+          <span className="w-2 h-2 rounded-full bg-white/50 border border-black/[0.18]" />
+          <span className="w-2 h-2 rounded-full bg-white/50 border border-black/[0.18]" />
         </div>
       )}
     </div>
