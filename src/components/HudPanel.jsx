@@ -33,6 +33,8 @@ export function HudPanel({ header, children, onDismiss }) {
     const panel = panelRef.current
     if (!panel) return
 
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
     let active = false
     let decided = false
     let animating = false
@@ -111,7 +113,7 @@ export function HudPanel({ header, children, onDismiss }) {
         // complete swipe finishes quickly.
         const remaining = (fullHeight - deltaY) - minHeight
         const contentH = fullHeight - minHeight
-        const duration = Math.max(80, Math.round(DISMISS_MS * (remaining / (contentH || 1))))
+        const duration = prefersReducedMotion ? 0 : Math.max(80, Math.round(DISMISS_MS * (remaining / (contentH || 1))))
 
         panel.style.transition = `height ${duration}ms cubic-bezier(0.2, 0, 0, 1)`
         panel.style.height = minHeight + 'px'
@@ -143,7 +145,8 @@ export function HudPanel({ header, children, onDismiss }) {
         setTimeout(cleanup, duration + 50)
       } else {
         // Snap back to full height — CSS transition handles the spring.
-        panel.style.transition = `height ${SNAPBACK_MS}ms cubic-bezier(0.2, 0.8, 0.2, 1)`
+        const snapDuration = prefersReducedMotion ? 0 : SNAPBACK_MS
+        panel.style.transition = `height ${snapDuration}ms cubic-bezier(0.2, 0.8, 0.2, 1)`
         panel.style.height = fullHeight + 'px'
 
         let done = false
@@ -159,7 +162,7 @@ export function HudPanel({ header, children, onDismiss }) {
         }
 
         panel.addEventListener('transitionend', cleanup, { once: true })
-        setTimeout(cleanup, SNAPBACK_MS + 50)
+        setTimeout(cleanup, snapDuration + 50)
       }
 
       active = false

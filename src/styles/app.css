@@ -84,4 +84,16 @@
     from { transform: translateY(100%); }
     to { transform: translateY(0); }
   }
+
+  /* Respect OS-level "Reduce Motion" preference. Near-zero durations (not 0)
+     so transitionend / animationend events still fire — components that listen
+     for these (HudPanel dismiss cleanup) won't hang waiting for an event that
+     never arrives. */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }
