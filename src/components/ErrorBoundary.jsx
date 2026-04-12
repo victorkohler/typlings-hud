@@ -14,7 +14,10 @@ export class ErrorBoundary extends React.Component {
     if (!this.state.hasError) return this.props.children
 
     return (
-      <div className="flex flex-col items-center justify-center h-screen h-[100dvh] px-(--spacing-xl) text-center bg-(--color-bg-warm) text-(--color-text-primary)">
+      <div
+        className="flex flex-col items-center justify-center h-screen px-(--spacing-xl) text-center bg-(--color-bg-warm) text-(--color-text-primary)"
+        style={{ height: '100dvh' }}
+      >
         <p className="text-lg font-medium mb-(--spacing-sm)">Something went wrong</p>
         <p className="text-sm text-(--color-text-secondary) mb-(--spacing-xl)">The configurator ran into an unexpected error.</p>
         <button

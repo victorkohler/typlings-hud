@@ -1,4 +1,33 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useCallback } from 'react'
+
+// Traps Tab focus within a container element. Returns a keydown handler to
+// attach to the container. Pressing Tab cycles through focusable elements
+// inside the container; Shift+Tab cycles backwards. This prevents focus from
+// escaping to elements behind a modal overlay.
+function useFocusTrap(containerRef) {
+  return useCallback((e) => {
+    if (e.key !== 'Tab') return
+    const el = containerRef.current
+    if (!el) return
+    const focusable = el.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    )
+    if (focusable.length === 0) return
+    const first = focusable[0]
+    const last = focusable[focusable.length - 1]
+    if (e.shiftKey) {
+      if (document.activeElement === first) {
+        e.preventDefault()
+        last.focus()
+      }
+    } else {
+      if (document.activeElement === last) {
+        e.preventDefault()
+        first.focus()
+      }
+    }
+  }, [containerRef])
+}
 
 // Inline SVG icons — no icon library per dependency policy.
 function ExpandIcon() {
@@ -32,10 +61,21 @@ function FullscreenViewer({ children, onClose }) {
   const [translate, setTranslate] = useState({ x: 0, y: 0 })
   const containerRef = useRef(null)
   const contentRef = useRef(null)
+  const handleFocusTrap = useFocusTrap(containerRef)
 
   // Mirrors for native handlers — refs stay current without re-attaching listeners.
   const scaleRef = useRef(1)
   scaleRef.current = scale
+  const onCloseRef = useRef(onClose)
+  onCloseRef.current = onClose
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onCloseRef.current()
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   useEffect(() => {
     const el = containerRef.current
@@ -114,6 +154,7 @@ function FullscreenViewer({ children, onClose }) {
     <div
       ref={containerRef}
       className="fixed inset-0 bg-black/[.92] z-[200] flex items-center justify-center touch-none animate-[fadeIn_var(--duration-normal)_ease]"
+      onKeyDown={handleFocusTrap}
     >
       <button
         className="absolute top-(--spacing-lg) right-(--spacing-lg) w-10 h-10 flex items-center justify-center border-none rounded-full bg-white/[.15] text-(--color-white) cursor-pointer z-[1] [-webkit-tap-highlight-color:transparent]"
@@ -213,6 +254,20 @@ export function CartConfirmModal({
 }) {
   const [fullscreen, setFullscreen] = useState(false)
   const scrollRef = useRef(null)
+  const modalRef = useRef(null)
+  const handleFocusTrap = useFocusTrap(modalRef)
+
+  // Dismiss on Escape key. Ref avoids re-attaching the listener when onCancel
+  // changes identity (common with inline arrow functions in the parent).
+  const onCancelRef = useRef(onCancel)
+  onCancelRef.current = onCancel
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onCancelRef.current()
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   // Lock body scroll while modal is open. iOS Safari allows touch events on
   // fixed overlays to bleed through and scroll underlying content. Setting
@@ -282,7 +337,7 @@ export function CartConfirmModal({
     return (
       <>
         <div className="fixed inset-0 bg-black/50 z-[100] animate-[fadeIn_var(--duration-normal)_ease] touch-none" onClick={onCancel} />
-        <div className="fixed inset-0 z-[101] flex flex-col bg-(--color-white) animate-[panelSlideUp_var(--duration-panel)_var(--ease-panel)]">
+        <div ref={modalRef} className="fixed inset-0 z-[101] flex flex-col bg-(--color-white) animate-[panelSlideUp_var(--duration-panel)_var(--ease-panel)]" onKeyDown={handleFocusTrap}>
           <div className="flex-1 overflow-y-auto overscroll-contain p-(--spacing-xl) pb-(--spacing-md)" ref={scrollRef}>
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-medium text-(--color-text-primary) text-left mb-(--spacing-xs)">Your finished design</h2>
@@ -332,8 +387,10 @@ export function CartConfirmModal({
         onClick={onCancel}
       >
         <div
+          ref={modalRef}
           className="bg-(--color-white) rounded-(--radius-md) p-(--spacing-xl) w-full max-w-[360px] animate-[slideUp_var(--duration-slow)_var(--ease-panel)]"
           onClick={(e) => e.stopPropagation()}
+          onKeyDown={handleFocusTrap}
         >
           <h2 className="text-lg font-medium text-(--color-text-primary) text-left mb-(--spacing-xs)">Your finished design</h2>
           <p className="text-sm text-(--color-text-secondary) text-left mb-(--spacing-lg)">Take a final look so everything is correct</p>

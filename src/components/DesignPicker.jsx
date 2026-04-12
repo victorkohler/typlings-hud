@@ -28,7 +28,7 @@ export function DesignPicker({
               aria-pressed={isSelected}
               className={[
                 'w-8 h-8 rounded-full p-0 cursor-pointer box-border',
-                'transition-all duration-(--duration-normal) ease',
+                'transition-[border-color,background,transform] duration-(--duration-normal) ease',
                 '[-webkit-tap-highlight-color:transparent]',
                 isSelected
                   ? 'border-[2.5px] border-(--color-accent) scale-[1.15]'
@@ -65,7 +65,7 @@ export function DesignPicker({
               aria-pressed={isSelected}
               className={[
                 'w-8 h-8 rounded-full p-0 cursor-pointer box-border',
-                'transition-all duration-(--duration-normal) ease',
+                'transition-[border-color,background,transform] duration-(--duration-normal) ease',
                 '[-webkit-tap-highlight-color:transparent]',
                 isSelected
                   ? 'border-[2.5px] border-(--color-accent) scale-[1.15]'

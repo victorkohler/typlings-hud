@@ -40,7 +40,7 @@ export function DetailsPanel({
                 'px-(--spacing-lg) py-(--spacing-md)',
                 'rounded-(--radius-md) border cursor-pointer',
                 'text-md font-medium',
-                'transition-all duration-(--duration-normal) ease',
+                'transition-[border-color,background-color,color] duration-(--duration-normal) ease',
                 '[-webkit-tap-highlight-color:transparent]',
                 isSelected
                   ? 'border-(--color-accent) bg-(--color-surface-card-selected) text-(--color-accent)'
@@ -80,7 +80,7 @@ export function DetailsPanel({
                   <div
                     className={[
                       'w-full aspect-square rounded-(--radius-sm) border',
-                      'transition-all duration-(--duration-normal) ease',
+                      'transition-[background-color,border-color] duration-(--duration-normal) ease',
                       isSelected
                         ? 'bg-(--color-surface-card-selected) border-(--color-accent)'
                         : 'bg-(--color-surface-thumbnail) border-transparent',

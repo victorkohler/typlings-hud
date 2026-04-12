@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import posterThumb from '../assets/poster-thumb-001.jpg'
 import bodyThumb from '../assets/body-thumb-001.jpg'
 
@@ -124,8 +124,12 @@ export function useConfigurator({ tabs = DEFAULT_TABS, completionRules = {} } = 
   const [selectedPattern, setSelectedPattern] = useState(null)
 
   // Merge default rules with any variant overrides. Every tab gets a rule.
+  // Stored in a ref so setActiveTab (memoized on markComplete only) always
+  // reads the latest rules without needing them in its dependency array.
   const rules = { ...DEFAULT_COMPLETION_RULES, ...completionRules }
-  const getRule = (tab) => rules[tab] || 'on_leave'
+  const rulesRef = useRef(rules)
+  rulesRef.current = rules
+  const getRule = (tab) => rulesRef.current[tab] || 'on_leave'
 
   // Completion badges. Every tab starts at `false`.
   const [completions, setCompletions] = useState(() =>
