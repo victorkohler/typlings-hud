@@ -213,18 +213,19 @@ export function CartConfirmModal({
 }) {
   const [fullscreen, setFullscreen] = useState(false)
   const scrollRef = useRef(null)
-  const prevSizeRef = useRef(selectedSize)
-  const prevFrameRef = useRef(frameName)
 
-  // Scroll to bottom when size or frame changes in panel mode.
-  if (variant === 'panel' && (prevSizeRef.current !== selectedSize || prevFrameRef.current !== frameName)) {
-    prevSizeRef.current = selectedSize
-    prevFrameRef.current = frameName
-    requestAnimationFrame(() => {
-      const el = scrollRef.current
-      if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
-    })
-  }
+  // Scroll to bottom when size or frame changes in panel mode so the updated
+  // price breakdown is visible. useEffect (not render-time rAF) avoids double-
+  // firing under StrictMode and keeps side-effects out of the render phase.
+  // Skips the initial mount via the `mounted` guard so the panel doesn't
+  // auto-scroll to the bottom on open.
+  const mountedRef = useRef(false)
+  useEffect(() => {
+    if (!mountedRef.current) { mountedRef.current = true; return }
+    if (variant !== 'panel') return
+    const el = scrollRef.current
+    if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+  }, [selectedSize, frameName, variant])
 
   const fullscreenPreviewTextClasses = [
     'text-[28px] font-bold tracking-[4px] uppercase text-(--color-text-primary) text-center break-words whitespace-pre-wrap leading-[1.2]',
